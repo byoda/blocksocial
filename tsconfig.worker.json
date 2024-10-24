@@ -1,0 +1,36 @@
+{
+    "extends": "@tsconfig/svelte/tsconfig.json",
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "esnext",
+        "strict": true,
+        "rootDir": "src",
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "baseUrl": ".",
+        "paths": {
+            "*": [
+                "src/*"
+            ]
+        },
+        "allowJs": false,
+        "isolatedModules": true,
+        "types": ["chrome", "node"],
+
+    },
+    "include": [
+        "src/**/*.ts",
+        "src/**/**/*.ts",
+        "test/**/*.ts",
+    ],
+
+    "exclude": [
+        "node_modules/*",
+        "src/**/*.svelte",
+        "public/*",
+        "src/scripts/*.wasm"
+    ]
+}
