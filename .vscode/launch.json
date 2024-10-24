@@ -1,0 +1,35 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+		{
+			"name": "Run development server",
+			"type": "node-terminal",
+			"request": "launch",
+			"command": "npm run dev"
+		},
+        {
+            "name": "Attach to Chrome",
+            "type": "chrome",
+            "request": "attach",
+            "port": 9222,
+            "webRoot":"${workspaceFolder}/src",
+        },
+        {
+            "name": "Attach to Firefox",
+            "type": "firefox",
+            "request": "attach",
+            "port": 9221,
+        },
+        {
+            "name": "Run npm test",
+            "request": "launch",
+            "type": "node",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "test"
+            ],
+            "args": [],
+            "env": {}
+        }
+    ]
+}
