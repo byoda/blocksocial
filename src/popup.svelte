@@ -23,7 +23,8 @@
     }
 </script>
 
-<main class='flex flex-col justify-center items-center'>
+<main class='flex flex-col justify-left items-center'>
+    <br/>
 {#await byomod.load_handles()}
     <p>Loading blocks...</p>
 {:then found_net_with_handles}
