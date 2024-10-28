@@ -5,6 +5,8 @@
     import browser from 'webextension-polyfill';
 
     import { Avatar } from '@skeletonlabs/skeleton';
+    import { popup } from '@skeletonlabs/skeleton';
+    import type { PopupSettings } from '@skeletonlabs/skeleton';
 
     import ByoMod from './lib/byomod'
     import HandleStore from './lib/handle_store/handle_store'
@@ -18,6 +20,12 @@
     let list_url: string = ''
 
     let byomod = new ByoMod(HANDLE_STORE)
+
+    const popupFeatured: PopupSettings = {
+        event: 'click',
+        target: 'real_popup',
+        placement: 'bottom-start',
+    }
 
     const add_list = async() => {
         await byomod.add_list(list_url)
@@ -36,7 +44,6 @@
     );
 
 </script>
-
 <main class='flex flex-col justify-left items-center'>
     <br/>
 {#await byomod.load_handles()}
@@ -105,16 +112,5 @@
         </button>
     </form>
 {/await}
-
-<div class="container mx-auto p-8 space-y-8">
-	<h1 class="h1">Hello Skeleton</h1>
-	<p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
-	<section>
-		<a class="btn variant-filled-primary" href="https://kit.svelte.dev/">SvelteKit</a>
-		<a class="btn variant-filled-secondary" href="https://tailwindcss.com/">Tailwind</a>
-		<a class="btn variant-filled-tertiary" href="https://github.com/">GitHub</a>
-	</section>
-</div>
-<Avatar src="https://i.pravatar.cc/" />
-
+<a href="/index.html" target='_blank'>Configure</a>
 </main>
