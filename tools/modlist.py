@@ -505,7 +505,6 @@ class ModerationList:
 
         self.blocks: dict[ModerationEntry] = {}
         self.trusts: list[UserEntry] = []
-        self.recommends: list[UserEntry] = []
 
     def __len__(self) -> int:
         return len(self.blocks)
@@ -526,10 +525,6 @@ class ModerationList:
         self.trusts.append(entry)
         self.last_updated = datetime.now(tz=UTC)
 
-    def add_recommend(self, entry: UserEntry) -> None:
-        self.recommends.append(entry)
-        self.last_updated = datetime.now(tz=UTC)
-
     def as_dict(self) -> dict[str, list[dict[str, str | dict]]]:
         data: OrderedDict[str, dict[str, any]] = {
             'meta': {
@@ -548,10 +543,6 @@ class ModerationList:
             'trust_list': [
                 entry.as_dict() for entry in self.trusts
             ],
-            'recommend_list': [
-                entry.as_dict() for entry in self.recommends
-            ],
-
         }
         return data
 
@@ -575,10 +566,6 @@ class ModerationList:
         for user_entry in raw_data.get('trust_list', []):
             entry: UserEntry = UserEntry.from_dict(user_entry)
             modlist.add_trust(entry)
-
-        for user_entry in raw_data.get('recommend_list', []):
-            entry: UserEntry = UserEntry.from_dict(user_entry)
-            modlist.add_recommend(entry)
 
         return modlist
 
@@ -876,7 +863,7 @@ class ModerationList:
             _LOGGER.debug(f'Added {social} account for {name}')
 
 
-FILE_DIR: str = '/mnt/c/Users/steve/OneDrive/BYODA/Engineering'
+FILE_DIR: str = '/mnt/c/Users/steve/OneDrive/BYODA/Engineering/moderation'
 TEST_EXCEL: str = f'{FILE_DIR}/content-moderation.xlsx'
 TEST_CSV: str = f'{FILE_DIR}/content-moderation - CSV.csv'
 TEST_YAML = 'tests/collateral/content-moderation.yaml'

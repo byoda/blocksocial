@@ -1,6 +1,10 @@
 <script lang='ts'>
     // inspect extension/service_worker with chrome://inspect/
 
+    import browser from 'webextension-polyfill';
+
+    import { Avatar } from '@skeletonlabs/skeleton';
+
     import ByoMod from './lib/byomod'
     import HandleStore from './lib/handle_store/handle_store'
 
@@ -21,6 +25,14 @@
         byomod.list_of_lists.lists = byomod.list_of_lists.lists
         list_url = ''
     }
+
+    browser.runtime.onMessage.addListener(
+        (message, sender, sendResponse) => {
+            console.log('Message received:', message);
+            // sendResponse({status: 'received'});
+        }
+    );
+
 </script>
 
 <main class='flex flex-col justify-left items-center'>
@@ -83,4 +95,16 @@
         </button>
     </form>
 {/await}
+
+<div class="container mx-auto p-8 space-y-8">
+	<h1 class="h1">Hello Skeleton</h1>
+	<p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+	<section>
+		<a class="btn variant-filled-primary" href="https://kit.svelte.dev/">SvelteKit</a>
+		<a class="btn variant-filled-secondary" href="https://tailwindcss.com/">Tailwind</a>
+		<a class="btn variant-filled-tertiary" href="https://github.com/">GitHub</a>
+	</section>
+</div>
+<Avatar src="https://i.pravatar.cc/" />
+
 </main>

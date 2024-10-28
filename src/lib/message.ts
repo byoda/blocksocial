@@ -2,11 +2,8 @@
 /* This module is currently not used
 */
 
-export interface iMessage<Type> {
-    source: string
-    type: string
-    data: Type
-}
+import browser from 'webextension-polyfill';
+
 
 import type {iSocialNetworkAuth} from './datatypes'
 
@@ -44,8 +41,7 @@ export default class Message {
     }
 
     public static setup_listen(handle_store: HandleStore): Function | undefined {
-        chrome.runtime.onMessage.addListener(
-            (request, sender, sendResponse) => {
+
                 try {
                     let message: iMessage<any> = JSON.parse(request) as iMessage<any>
                     if (message.type === 'auth_tokens') {

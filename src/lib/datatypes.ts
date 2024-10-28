@@ -5,7 +5,6 @@ export enum SocialAccountStoredStatus {
     ATTEMPTED = 'ATTEMPTED',
 }
 
-
 export interface iSocialNetworkAuth {
     name: string
     jwt: string | undefined
@@ -71,4 +70,10 @@ export interface iBlockEntry {
 
 export interface iListOfLists {
     lists: string[]
+}
+
+export interface iMessage<Type> {
+    source: string
+    type: string
+    data: Type
 }

@@ -25,6 +25,8 @@
         "@rollup/plugin-commonjs": "^28.0.0",
         "@rollup/plugin-node-resolve": "^15.3.0",
         "@rollup/plugin-typescript": "^12.1.0",
+        "@skeletonlabs/skeleton": "^2.10.3",
+        "@skeletonlabs/tw-plugin": "^0.4.0",
         "@tsconfig/svelte": "^5.0.4",
         "@types/chrome": "^0.0.273",
         "@types/jest": "^29.5.13",
