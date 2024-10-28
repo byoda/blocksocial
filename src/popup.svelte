@@ -1,3 +1,4 @@
+<!-- @migration-task Error while migrating Svelte code: `<tr>` is invalid inside `<table>` -->
 <script lang='ts'>
     // inspect extension/service_worker with chrome://inspect/
 
@@ -30,6 +31,7 @@
         (message, sender, sendResponse) => {
             console.log('Message received:', message);
             // sendResponse({status: 'received'});
+            return true;
         }
     );
 
@@ -42,20 +44,24 @@
 {:then found_net_with_handles}
     {#if found_net_with_handles}
         <table>
-            <tr>
-                <th>Platform</th>
-                <th>Handles</th>
-                <th>Blocked</th>
-            </tr>
-            {#each SOCIAL_NETWORKS_BY_PLATFORM.values() as net}
-                {#if net !== undefined && net.blocked_handles !== undefined && net.blocked_handles.size > 0}
-                    <tr>
-                        <td>{net.name}</td>
-                        <td>{net.all_handles.size}</td>
-                        <td>{net.blocked_handles.size}</td>
-                    </tr>
-                {/if}
-            {/each}
+            <thead>
+                <tr>
+                    <th>Platform</th>
+                    <th>Handles</th>
+                    <th>Blocked</th>
+                </tr>
+            </thead>
+            <tbody>
+                {#each SOCIAL_NETWORKS_BY_PLATFORM.values() as net}
+                    {#if net !== undefined && net.blocked_handles !== undefined && net.blocked_handles.size > 0}
+                        <tr>
+                            <td>{net.name}</td>
+                            <td>{net.all_handles.size}</td>
+                            <td>{net.blocked_handles.size}</td>
+                        </tr>
+                    {/if}
+                {/each}
+            </tbody>
         </table>
     {/if}
 {/await}
@@ -66,18 +72,22 @@
     <p>Loading lists...</p>
 {:then lists}
     <table>
-        <tr>
-            <th>Configured Lists</th>
-            <th>Blocks</th>
-            <th></th>
-            <th></th>
-        </tr>
-        {#each lists.keys() as list_url}
+        <thead>
             <tr>
-                <td>{lists.get(list_url).list.meta.list_name}</td>
-                <td>{lists.get(list_url).list.block_list.length}</td>
+
+                <th>Configured Lists</th>
+                <th>Blocks</th>
+                <th></th>
+                <th></th>
             </tr>
-        {/each}
+        </thead>
+        <tbody>
+            {#each lists.keys() as list_url}
+                <tr>
+                    <td>{lists.get(list_url).list.meta.list_name}</td>
+                    <td>{lists.get(list_url).list.block_list.length}</td>
+                </tr>
+            {/each}
     </table>
     <br/>
     <form on:submit|preventDefault={add_list} method="POST">

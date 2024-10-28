@@ -1,12 +1,11 @@
 import App from "./config.svelte";
 import "./tailwind.css";
+import { mount } from "svelte";
 
-const app = new App(
-    {
+const app = mount(App, {
         target: document.body,
         //    props: {},
-    }
-);
+    });
 
 /** @type {import('./$types').Actions} */
 interface EventDetail {
