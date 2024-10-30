@@ -4,7 +4,6 @@
 
     import browser from 'webextension-polyfill';
 
-    import { Avatar } from '@skeletonlabs/skeleton';
     import { popup } from '@skeletonlabs/skeleton';
     import type { PopupSettings } from '@skeletonlabs/skeleton';
 
@@ -31,7 +30,7 @@
         await byomod.add_list(list_url)
         // Svelte trickery for updating lists:
         // https://learn.svelte.dev/tutorial/updating-arrays-and-objects
-        byomod.list_of_lists.lists = byomod.list_of_lists.lists
+        byomod.subscribed_lists.lists = byomod.subscribed_lists.lists
         list_url = ''
     }
 

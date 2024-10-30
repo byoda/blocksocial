@@ -29,19 +29,19 @@ export default class ByoStorage {
         return data
     }
 
-    load_list_of_lists_sync(): iListOfLists {
-        let key: string = `LoL`;
+    load_subscribed_lists_sync(): iListOfLists {
+        let key: string = `subscribed_lists`;
         const parsed = this.get_sync(key);
         if (this.isListOfLists(parsed)) {
             let data: iListOfLists = parsed as iListOfLists;
             return data
         };
 
-        return { lists: [] };
+        return { lists: new Set<string>() };
     }
 
-    save_list_of_lists_sync(value: iListOfLists) {
-        let key: string = `LoL`;
+    save_subscribed_lists_sync(value: iListOfLists) {
+        let key: string = `subscribed_lists`;
         this.set_sync(key, value);
     }
 

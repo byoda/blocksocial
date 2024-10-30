@@ -1,0 +1,202 @@
+---
+meta:
+  author_email: steven+byomod@byoda.org
+  author_name: Dathes
+  author_url: https://byoda.org
+  categories:
+    alt-right: maga, christian-nationalist, rage-baiting, and/or bad-faith arguments,
+      etc.
+    conspiracy: spreads unprovable conspiracy theories
+    disinformation: intentionally spreading false information
+    disinformation-ukraine: spreading disinformation specifically about the war in
+      ukraine
+    disinformation-war: spreading disinformation about wars
+    facist: 'promotes authoritarian centralized power, oppresive dictatorial control'
+    finance-bro: people giving questionable financial advice, including crypto
+    gambling: 'promotes gambling'
+    gun-rights: people that refuse to consider that killing someone is a lot easier
+      when you have a gun
+    medical-disinformation: including the impact of covid, denying vaccins work, and/or
+      promote alternative treatments over science-based treatments
+    misogyny: Hatred of, contempt for, or prejudice against women
+    nazi: 'sympathizes nazi ideology'
+    racism: prejudiced belief that one race is superior to others
+  disclaimer: This list reflects the opinions of the author and the author shares
+    these opinions with those who are interested in them. No information in this list
+    should be considered as fact.
+  download_url: https://byomod.org/lists/dathes.yaml
+  last_updated: 2024-10-09 15:00:40.140156+00:00
+  list_name: test-list-6
+recommend_list: []
+trust_list: []
+block_list:
+- annotations: []
+  business_name: null
+  business_type: null
+  categories:
+  - alt-right
+  first_name: null
+  languages:
+  - en
+  last_name: null
+  social_accounts:
+  - handle: TheFIREorg
+    is_primary: true
+    last_active: unknown
+    platform: YouTube
+    stats: []
+    status: active
+    url: https://www.youtube.com/@TheFIREorg
+  - handle: TheFIREorg
+    is_primary: true
+    last_active: unknown
+    platform: Twitter
+    stats: []
+    status: active
+    url: https://x.com/TheFIREorg
+  - handle: thefireorg
+    is_primary: true
+    last_active: unknown
+    platform: Facebook
+    stats: []
+    status: active
+    url: https://www.facebook.com/thefireorg
+  urls:
+  - https://www.thefire.org/
+- annotations: []
+  business_name: null
+  business_type: null
+  categories:
+  - alt-right
+  first_name: null
+  languages:
+  - en
+  last_name: null
+  social_accounts:
+  - handle: TheFirstonTV
+    is_primary: true
+    last_active: unknown
+    platform: YouTube
+    stats: []
+    status: active
+    url: https://www.youtube.com/@TheFirstonTV
+  - handle: thefirstontv
+    is_primary: true
+    last_active: unknown
+    platform: Twitter
+    stats: []
+    status: active
+    url: https://x.com/thefirstontv
+  - handle: TheFirstonTV
+    is_primary: true
+    last_active: unknown
+    platform: Facebook
+    stats: []
+    status: active
+    url: https://www.facebook.com/TheFirstonTV
+  - handle: thefirstontv
+    is_primary: true
+    last_active: unknown
+    platform: Instagram
+    stats: []
+    status: active
+    url: https://www.instagram.com/thefirstontv
+  urls:
+  - https://www.thefirsttv.com/
+- annotations: []
+  business_name: null
+  business_type: null
+  categories:
+  - alt-right
+  first_name: null
+  languages:
+  - en
+  last_name: null
+  social_accounts:
+  - handle: FreeSpeechClub
+    is_primary: true
+    last_active: unknown
+    platform: YouTube
+    stats: []
+    status: active
+    url: https://www.youtube.com/@FreeSpeechClub
+  - handle: TheFSClub
+    is_primary: true
+    last_active: unknown
+    platform: Twitter
+    stats: []
+    status: active
+    url: https://x.com/TheFSClub
+  - handle: TheFreeSpeechClub
+    is_primary: true
+    last_active: unknown
+    platform: Facebook
+    stats: []
+    status: active
+    url: https://www.facebook.com/TheFreeSpeechClub
+  - handle: thefreespeechclub
+    is_primary: true
+    last_active: unknown
+    platform: Instagram
+    stats: []
+    status: active
+    url: https://www.instagram.com/thefreespeechclub
+  urls:
+  - https://www.freespeechclub.com/
+- annotations: []
+  business_name: null
+  business_type: null
+  categories:
+  - racism
+  - disinformation
+  first_name: null
+  languages:
+  - en
+  last_name: null
+  social_accounts:
+  - handle: BrokeGroyper
+    is_primary: true
+    last_active: unknown
+    platform: Twitter
+    stats: []
+    status: active
+    url: https://x.com/BrokeGroyper
+  urls: []
+- annotations: []
+  business_name: The Gateway Pundit
+  business_type: null
+  categories:
+  - alt-right
+  first_name: Elijah
+  languages:
+  - en
+  last_name: Schaffer
+  social_accounts:
+  - handle: ElijahSchaffer
+    is_primary: true
+    last_active: unknown
+    platform: Twitter
+    stats: []
+    status: active
+    url: https://x.com/ElijahSchaffer
+  urls:
+  - https://www.twc.health/pages/elijah-schaffer-medkit-spike?ref=offensive&utm_medium=affiliate
+- annotations: []
+  business_name: null
+  business_type: null
+  categories:
+  - alt-right
+  first_name: null
+  languages:
+  - en
+  last_name: null
+  social_accounts:
+  - handle: AFpost
+    is_primary: true
+    last_active: unknown
+    platform: Twitter
+    stats: []
+    status: active
+    url: https://x.com/AFpost
+  urls:
+  - https://afpost.news/

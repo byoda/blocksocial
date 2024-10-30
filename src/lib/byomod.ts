@@ -1,51 +1,99 @@
 // Class containing all the data for BYOMod and methods to load/save them
 
-import type {iListOfLists} from './datatypes'
+import type {iListOfLists, iListStat} from './datatypes'
 
 import ByoList from './list'
 import ByoStorage from './storage'
-import {SOCIAL_NETWORKS_BY_PLATFORM} from './constants'
-
 import HandleStore from '../lib/handle_store/handle_store'
+
+import {LIST_OF_LISTS_URL} from './constants'
+import {SOCIAL_NETWORKS_BY_PLATFORM} from './constants'
 
 
 export default class ByoMod {
     storage: ByoStorage
     handle_store: HandleStore
-    list_of_lists: iListOfLists
+    subscribed_lists: iListOfLists
     lists: Map<string, ByoList> = new Map<string, ByoList>
+    list_of_lists: Map<string,iListStat> = new Map<string, iListStat>()
 
     constructor(handle_store: HandleStore) {
         this.storage = new ByoStorage()
         this.handle_store = handle_store
 
-        this.list_of_lists = this.storage.load_list_of_lists_sync()
-        if (this.list_of_lists === undefined
-                || this.list_of_lists.lists === undefined
-                || this.list_of_lists.lists.length === 0) {
-            this.list_of_lists = {
-                lists: []
+        this.subscribed_lists = this.storage.load_subscribed_lists_sync()
+        if (this.subscribed_lists === undefined
+                || this.subscribed_lists.lists === undefined
+                || this.subscribed_lists.lists.size === 0) {
+            this.subscribed_lists = {
+                lists: new Set<string>()
             }
         }
     }
 
+    async download_list_of_lists(url: string, subscribed_only: boolean = false): Promise<[Map<string,iListStat>, Map<string,iListStat>]> {
+        const resp: Response = await fetch(url)
+        console.log(`Downloaded list of lists from ${url}`)
+        if (!resp.ok) {
+            console.error('Failed to download list of lists')
+            return [new Map<string,iListStat>(), new Map<string,iListStat>()]
+        }
+        try {
+            let lists: iListStat[] = await resp.json() as iListStat[]
+            for (let list of lists) {
+                this.list_of_lists.set(list.url, list)
+            }
+            } catch (e) {
+            console.error('Failed to parse list of lists JSON')
+            return [new Map<string,iListStat>(), new Map<string,iListStat>()]
+        }
+
+        let subscribed_lists: Map<string, iListStat> = new Map<string, iListStat>()
+        for (let list of this.list_of_lists.values()) {
+            if (this.subscribed_lists.lists.has(list.url)) {
+                subscribed_lists.set(list.url, list)
+            }
+        }
+        if (subscribed_only) {
+            return [subscribed_lists, new Map<string,iListStat>()]
+        }
+
+        let unsubscribed_lists: Map<string, iListStat> = new Map<string, iListStat>()
+        for (let list of this.list_of_lists.values()) {
+            if (! this.subscribed_lists.lists.has(list.url)) {
+                unsubscribed_lists.set(list.url, list)
+            }
+        }
+        return [subscribed_lists, unsubscribed_lists]
+    }
+
+    async get_subscribed_lists(): Promise<Map<string, iListStat>> {
+        let [subscribed_lists, _] = await this.download_list_of_lists(LIST_OF_LISTS_URL, true)
+        return subscribed_lists
+    }
+
+    async get_unsubscribed_lists(): Promise<Map<string, iListStat>> {
+        let [_, unsubscribed_lists] = await this.download_list_of_lists(LIST_OF_LISTS_URL)
+        return unsubscribed_lists
+    }
+
     async load_lists() {
         // console.log('Loading lists')
-        let all_lists: Map<string, ByoList> = new Map<string, ByoList>()
-        for (let mod_list of this.list_of_lists.lists) {
+        let subscribed_lists: Map<string, ByoList> = new Map<string, ByoList>()
+        for (let mod_list of this.subscribed_lists.lists) {
             // console.log('Reading URL: ', mod_list)
             let byo_list: ByoList = new ByoList(mod_list)
             let result: boolean = await byo_list.initialize()
             if (result) {
                 console.log('Loading list: ', mod_list)
-                all_lists.set(mod_list, byo_list)
+                subscribed_lists.set(mod_list, byo_list)
             }
         }
-        return all_lists
+        return subscribed_lists
     }
 
-    async save_list_of_lists() {
-        this.storage.save_list_of_lists_sync(this.list_of_lists)
+    async save_subscribed_lists() {
+        this.storage.save_subscribed_lists_sync(this.subscribed_lists)
     }
 
     async add_list(list_url: string) {
@@ -54,7 +102,7 @@ export default class ByoMod {
             return
         }
 
-        if (this.list_of_lists.lists.includes(list_url)) {
+        if (this.subscribed_lists.lists.has(list_url)) {
             console.info(`List already subscribed: ${list_url}`)
             return
         }
@@ -87,9 +135,9 @@ export default class ByoMod {
             console.error('Invalid URL: ', list_url, e)
             return
         }
-        this.list_of_lists.lists.push(list_url)
-        this.list_of_lists.lists = this.list_of_lists.lists
-        await this.save_list_of_lists()
+        this.subscribed_lists.lists.add(list_url)
+        this.subscribed_lists.lists = this.subscribed_lists.lists
+        await this.save_subscribed_lists()
         console.log(`List added: ${list_url}`)
 
     }

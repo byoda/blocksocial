@@ -2,6 +2,7 @@ import { SocialNetwork } from './social_network';
 
 export const DEFAULT_LIST: string = 'https://byomod.org/lists/dathes.yaml'
 export const EXTENSION_ID: string = 'eonknbiiibbeipnbhlgedahcbaeomnmj'
+export const LIST_OF_LISTS_URL: string = 'https://byomod.org/lists/list-of-lists.json'
 
 export const SOCIAL_NETWORKS_BY_DOMAIN: Map<string, SocialNetwork> = new Map(
     [

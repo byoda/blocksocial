@@ -17,16 +17,18 @@ export interface iSocialNetworkAuth {
     graphql_token: string | undefined
 }
 
-export interface iSocialAccountPush {
-    list: string,
-    accounts: iSocialAccount[]
+
+// Used for saving the List-of-Lists as string to local storage
+export interface iListOfLists {
+    lists: Set<string>
 }
 
-export interface iAccountStat {
-    timestamp: Date;
-    followers: number;
-    assets: number;
-    views: number;
+// The stats included in the central hosted list of lists
+export interface iListStat {
+    name: string
+    last_updated: Date
+    url: string
+    counters: Map<string, number>
 }
 
 export interface iByoList {
@@ -68,12 +70,23 @@ export interface iBlockEntry {
     social_accounts: iSocialAccount[]
 }
 
-export interface iListOfLists {
-    lists: string[]
-}
 
 export interface iMessage<Type> {
     source: string
     type: string
     data: Type
+}
+
+// Currently unused, was used for messages
+export interface iSocialAccountPush {
+    list: string,
+    accounts: iSocialAccount[]
+}
+
+// Currently unused, planned use for tracking social account stats
+export interface iAccountStat {
+    timestamp: Date;
+    followers: number;
+    assets: number;
+    views: number;
 }

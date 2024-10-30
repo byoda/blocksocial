@@ -1,0 +1,77 @@
+[
+  {
+    "url": "https://byomod.org/lists/dathes.yaml",
+    "name": "Steven's block list",
+    "last_updated": "2024-10-30T01:57:33.296322+00:00",
+    "counters": {
+      "facebook": 116,
+      "instagram": 103,
+      "twitter": 1183,
+      "youtube": 308,
+      "tiktok": 15,
+      "truthsocial": 191,
+      "rumble": 70,
+      "odysee": 1,
+      "gab": 4,
+      "telegram": 41,
+      "bitchute": 27,
+      "bluesky": 7,
+      "mastodon": 1,
+      "threads": 3,
+      "twitch": 9,
+      "reddit": 2,
+      "discord": 2,
+      "parler": 0
+    }
+  },
+  {
+    "url": "https://byomod.org/lists/test-6.yaml",
+    "name": "test-list-6",
+    "last_updated": "2024-10-30T01:57:33.326825+00:00",
+    "counters": {
+      "facebook": 3,
+      "instagram": 2,
+      "twitter": 6,
+      "youtube": 3,
+      "tiktok": 0,
+      "truthsocial": 0,
+      "parler": 0,
+      "rumble": 0,
+      "odysee": 0,
+      "gab": 0,
+      "telegram": 0,
+      "bitchute": 0,
+      "bluesky": 0,
+      "mastodon": 0,
+      "threads": 0,
+      "twitch": 0,
+      "reddit": 0,
+      "discord": 0
+    }
+  },
+  {
+    "url": "https://byomod.org/lists/test-0.yaml",
+    "name": "test-list-0",
+    "last_updated": "2024-10-09T15:00:40.140156+00:00",
+    "counters": {
+      "facebook": 0,
+      "instagram": 0,
+      "twitter": 0,
+      "youtube": 0,
+      "tiktok": 0,
+      "truthsocial": 0,
+      "parler": 0,
+      "rumble": 0,
+      "odysee": 0,
+      "gab": 0,
+      "telegram": 0,
+      "bitchute": 0,
+      "bluesky": 0,
+      "mastodon": 0,
+      "threads": 0,
+      "twitch": 0,
+      "reddit": 0,
+      "discord": 0
+    }
+  }
+]
