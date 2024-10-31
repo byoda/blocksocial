@@ -45,6 +45,8 @@ export interface iByoListMeta {
     author_url: string
     categories: iByoListCategory[]
     list_name: string
+    last_updated: Date
+    download_url: string
 }
 
 export interface iByoListCategory {

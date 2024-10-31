@@ -40,6 +40,13 @@
             "env": {
                 "PYTHONPATH": "${workspaceFolder}",
             }
-        }
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome against localhost",
+            "url": "file:///${workspaceFolder}/public",
+            "webRoot": "${workspaceFolder}"
+          }
     ]
 }

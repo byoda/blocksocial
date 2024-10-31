@@ -59,6 +59,10 @@ export default class ByoList {
     }
 
     async load(): Promise<number> {
+        /**
+        Load the list from storage
+        **/
+
         let key: string = this.get_keyname(`list_${this.url!.href}`);
         let data: iByoList = await this.storage.get(key) as iByoList;
         this.list = data;
@@ -70,7 +74,9 @@ export default class ByoList {
                     author_email: '',
                     author_name: '',
                     author_url: '',
-                    categories: []
+                    categories: [],
+                    last_updated: new Date(),
+                    download_url: ''
                 },
                 block_list: [],
                 trust_list: []

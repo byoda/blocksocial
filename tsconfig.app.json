@@ -4,6 +4,10 @@
     "esModuleInterop": true,
     "compilerOptions": {
         "types": ["jest", "chrome", "node"],
+        // "target": "ES6",  set on parent
+        // "module": "esnext", set on parent
+        // "sourceMap": true, set on parent
+        "outDir": "public/build",
     },
 
     "types": [

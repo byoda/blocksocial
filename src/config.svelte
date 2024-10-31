@@ -57,7 +57,7 @@
 
 </script>
 <h2>Available Lists</h2>
-<div class='container mx-auto px-4 min-w-full'>
+<div class='container mx-auto px-4 '>
 {#await get_lists()}
     <p>Loading unsubscribed lists...</p>
 {:then all_lists}
@@ -65,7 +65,7 @@
         <table>
             <thead>
                 <tr>
-                    <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">List</th>
+                    <th>List</th>
                     <th><img src='images/twitter-icon.png' alt='twitter icon' height='40' width='40'/></th>
                     <th><img src='images/youtube-icon.png' alt='youtube icon' height='40' width='40'/></th>
                     <th><img src='images/tiktok-icon.png' alt='tiktok icon' height='40' width='40'/></th>
@@ -78,9 +78,9 @@
 {#each table.rows as row}
                     <tr>
                         <td style='width:50%'>{row.name}</td>
-                        <td>{row.counters['twitter']}</td>
-                        <td>{row.counters['youtube']}</td>
-                        <td>{row.counters['tiktok'] || 0}</td>
+                        <td style='width:10%'>{row.counters.get('twitter')}</td>
+                        <td style='width:10%'>{row.counters.get('youtube')}</td>
+                        <td style='width:10%'>{row.counters.get('tiktok')}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
 {#if row.subscribed == false}
                             <button type="button" on:click={() => subscribe(row.url)} class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-gray-50 text-grey-800 hover:text-grey-800 focus:outline-none focus:text-blue-800 disabled:opacity-50 disabled:pointer-events-none dark:text-blue-500 dark:hover:text-blue-400 dark:focus:text-blue-400">Subscribe</button>

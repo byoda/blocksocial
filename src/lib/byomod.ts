@@ -47,11 +47,17 @@ export default class ByoMod {
                 } else {
                     list.subscribed = false
                 }
+                // JSON parser does not parse to Map so we have to do it
+                // manually
+                let counter_obj: Object = list.counters
+                let mapped_counters: Map<string, number> = new Map(Object.entries(counter_obj))
+                list.counters = mapped_counters
+                console.log(`Result: ${list.name} - ${list.counters.get('twitter')}`)
             }
             return this.list_of_lists
-            } catch (e) {
-                console.error('Failed to parse list of lists JSON')
-                return new Map<string,iListStat>()
+        } catch (e) {
+            console.error(`Failed to parse list of lists JSON: ${e}`)
+            return new Map<string,iListStat>()
         }
     }
 
