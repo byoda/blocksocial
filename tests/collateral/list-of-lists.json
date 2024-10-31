@@ -2,7 +2,27 @@
   {
     "url": "https://byomod.org/lists/dathes.yaml",
     "name": "Steven's block list",
-    "last_updated": "2024-10-30T01:57:33.296322+00:00",
+    "last_updated": "2024-10-31T00:02:51.141948+00:00",
+    "categories": [
+      "alt-right",
+      "bot",
+      "categories",
+      "conspiracy",
+      "disinformation",
+      "disinformation-ukraine",
+      "disinformation-war",
+      "facist",
+      "finance-bro",
+      "gambling",
+      "gun-rights",
+      "impersonator",
+      "medical-disinformation",
+      "misogyny",
+      "nazi",
+      "racism",
+      "troll",
+      "ufo"
+    ],
     "counters": {
       "facebook": 116,
       "instagram": 103,
@@ -27,7 +47,12 @@
   {
     "url": "https://byomod.org/lists/test-6.yaml",
     "name": "test-list-6",
-    "last_updated": "2024-10-30T01:57:33.326825+00:00",
+    "last_updated": "2024-10-31T00:02:51.173784+00:00",
+    "categories": [
+      "alt-right",
+      "disinformation",
+      "racism"
+    ],
     "counters": {
       "facebook": 3,
       "instagram": 2,
@@ -53,6 +78,9 @@
     "url": "https://byomod.org/lists/test-0.yaml",
     "name": "test-list-0",
     "last_updated": "2024-10-09T15:00:40.140156+00:00",
+    "categories": [
+      "alt-right"
+    ],
     "counters": {
       "facebook": 0,
       "instagram": 0,

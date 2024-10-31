@@ -31,49 +31,55 @@ export default class ByoMod {
         }
     }
 
-    async download_list_of_lists(url: string, subscribed_only: boolean = false): Promise<[Map<string,iListStat>, Map<string,iListStat>]> {
+    async download_list_of_lists(url: string): Promise<Map<string,iListStat>> {
         const resp: Response = await fetch(url)
         console.log(`Downloaded list of lists from ${url}`)
         if (!resp.ok) {
             console.error('Failed to download list of lists')
-            return [new Map<string,iListStat>(), new Map<string,iListStat>()]
+            return new Map<string,iListStat>()
         }
         try {
             let lists: iListStat[] = await resp.json() as iListStat[]
             for (let list of lists) {
                 this.list_of_lists.set(list.url, list)
+                if (this.subscribed_lists.lists.has(list.url)) {
+                    list.subscribed = true
+                } else {
+                    list.subscribed = false
+                }
             }
+            return this.list_of_lists
             } catch (e) {
-            console.error('Failed to parse list of lists JSON')
-            return [new Map<string,iListStat>(), new Map<string,iListStat>()]
+                console.error('Failed to parse list of lists JSON')
+                return new Map<string,iListStat>()
         }
-
-        let subscribed_lists: Map<string, iListStat> = new Map<string, iListStat>()
-        for (let list of this.list_of_lists.values()) {
-            if (this.subscribed_lists.lists.has(list.url)) {
-                subscribed_lists.set(list.url, list)
-            }
-        }
-        if (subscribed_only) {
-            return [subscribed_lists, new Map<string,iListStat>()]
-        }
-
-        let unsubscribed_lists: Map<string, iListStat> = new Map<string, iListStat>()
-        for (let list of this.list_of_lists.values()) {
-            if (! this.subscribed_lists.lists.has(list.url)) {
-                unsubscribed_lists.set(list.url, list)
-            }
-        }
-        return [subscribed_lists, unsubscribed_lists]
     }
 
     async get_subscribed_lists(): Promise<Map<string, iListStat>> {
-        let [subscribed_lists, _] = await this.download_list_of_lists(LIST_OF_LISTS_URL, true)
+        if (this.list_of_lists.size == 0) {
+            await this.download_list_of_lists(LIST_OF_LISTS_URL)
+        }
+        let subscribed_lists: Map<string, iListStat> = new Map<string, iListStat>()
+        for (let list of this.list_of_lists.values()) {
+            if (this.subscribed_lists.lists.has(list.url)) {
+                list.subscribed = true
+                subscribed_lists.set(list.url, list)
+            }
+        }
         return subscribed_lists
     }
 
     async get_unsubscribed_lists(): Promise<Map<string, iListStat>> {
-        let [_, unsubscribed_lists] = await this.download_list_of_lists(LIST_OF_LISTS_URL)
+        if (this.list_of_lists.size == 0) {
+            await this.download_list_of_lists(LIST_OF_LISTS_URL)
+        }
+        let unsubscribed_lists: Map<string, iListStat> = new Map<string, iListStat>()
+        for (let list of this.list_of_lists.values()) {
+            if (! this.subscribed_lists.lists.has(list.url)) {
+                list.subscribed = false
+                unsubscribed_lists.set(list.url, list)
+            }
+        }
         return unsubscribed_lists
     }
 

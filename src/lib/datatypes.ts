@@ -29,6 +29,8 @@ export interface iListStat {
     last_updated: Date
     url: string
     counters: Map<string, number>
+    categories: string[]
+    subscribed: boolean | undefined
 }
 
 export interface iByoList {

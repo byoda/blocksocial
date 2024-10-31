@@ -873,6 +873,7 @@ class ListStats:
     url: str
     name: str | None = field(default=None)
     last_updated: datetime | None = field(default=None)
+    categories: list[str] | None = field(default_factory=list)
     counters: dict[str, int] = field(default_factory=dict)
 
 
@@ -920,6 +921,7 @@ class ListOfLists:
                 )
                 list_stats.name = mod_list.list_name
                 list_stats.last_updated = mod_list.last_updated
+                list_stats.categories = list(mod_list.categories.keys())
 
                 platform: str
                 for platform in SOCIAL_PLATFORMS.keys():

@@ -12,7 +12,7 @@
             "type": "chrome",
             "request": "attach",
             "port": 9222,
-            "webRoot":"${workspaceFolder}/src",
+            "webRoot":"${workspaceFolder}",
         },
         {
             "name": "Attach to Firefox",

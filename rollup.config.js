@@ -103,6 +103,7 @@ function buildConfig(inputFileName, outputFileName) {
 export default [
     buildConfig("popup", "popup"),
     buildConfig("config", "config"),
+    buildConfig("listview", "listview"),
     {
         input: "src/worker/worker.ts",
         output: {
