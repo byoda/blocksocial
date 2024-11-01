@@ -90,10 +90,8 @@ export default class ByoMod {
     }
 
     async load_lists() {
-        // console.log('Loading lists')
         let subscribed_lists: Map<string, ByoList> = new Map<string, ByoList>()
         for (let mod_list of this.subscribed_lists.lists) {
-            // console.log('Reading URL: ', mod_list)
             let byo_list: ByoList = new ByoList(mod_list)
             let result: boolean = await byo_list.initialize()
             if (result) {

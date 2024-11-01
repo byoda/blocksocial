@@ -57,7 +57,7 @@
 
 </script>
 <h2>Available Lists</h2>
-<div class='container mx-auto px-4 '>
+<div class='container mx-auto px-0 '>
 {#await get_lists()}
     <p>Loading unsubscribed lists...</p>
 {:then all_lists}
@@ -77,7 +77,7 @@
             <tbody>
 {#each table.rows as row}
                     <tr>
-                        <td style='width:50%'>{row.name}</td>
+                        <td style='width:50%'><a href='/listview.html?list={row.url}'>{row.name}</a></td>
                         <td style='width:10%'>{row.counters.get('twitter')}</td>
                         <td style='width:10%'>{row.counters.get('youtube')}</td>
                         <td style='width:10%'>{row.counters.get('tiktok')}</td>

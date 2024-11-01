@@ -12,7 +12,13 @@
             "type": "chrome",
             "request": "attach",
             "port": 9222,
-            "webRoot":"${workspaceFolder}",
+            "webRoot":"/home/steven/src/byomod-ext/public",
+            "smartStep": true,
+            "skipFiles": [
+                "<node_internals>/**",
+                "node_modules/**",
+                "src/node_modules/**",
+            ],
         },
         {
             "name": "Attach to Firefox",
@@ -45,7 +51,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
-            "url": "file:///${workspaceFolder}/public",
+            "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}"
           }
     ]

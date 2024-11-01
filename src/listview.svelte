@@ -2,34 +2,34 @@
     import {TableHandler, Datatable, ThSort, ThFilter } from '@vincjo/datatables';
 
     import ByoList from './lib/list'
-    import type { iByoListCategory } from './lib/datatypes';
-
+    import BlockEntry from './lib/blockentry'
 
     let url: string = ''
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('list')) {
         url = urlParams.get('list')
-        console.log(url)
     } else {
         window.location.href = '/index.html'
     }
     console.log('ListView reporting for duty')
     let byo_list: ByoList
+    let block_entry: BlockEntry
     let table: TableHandler
     const get_list = async() => {
         console.log(`Downloading list ${url}`)
         byo_list = new ByoList(url)
-        await byo_list.download()
-        table = new TableHandler(byo_list.list.block_list, {rowsPerPage: 30})
-        return byo_list.list.block_list
+        await byo_list.initialize()
+        table = new TableHandler(byo_list.block_entries, {rowsPerPage: 30})
+        return byo_list.block_entries
     }
 </script>
-<h1>List Details</h1>
-<div class='container mx-auto px-4 '>
+<h1>List Metadata</h1>
+<div class='container mx-auto px-4 text-sm content-normal'>
 {#await get_list()}
     <p>Loading list {url}...</p>
-{:then all_lists}
-    <table>
+{:then block_list}
+
+    <table >
         <thead>
             <tr>
                 <th>List</th>
@@ -38,6 +38,10 @@
             <tr>
                 <th>Last updated</th>
                 <td>{byo_list.list.meta.last_updated}</td>
+            </tr>
+            <tr>
+                <th>Entries</th>
+                <td>{byo_list.block_entries.length}</td>
             </tr>
             <tr>
                 <th>Author</th>
@@ -58,55 +62,72 @@
             <tr>
                 <th>Categories</th>
                 <td>
-                    <table>
-                        <thead>
-{#each byo_list.list.meta.categories as category}
-                            <tr>
-                                <th>{category.name}</th>
-                                <td>{category.description}</td>
-                            </tr>
-{/each}
-                        </thead>
-                    </table>
+
                 </td>
             </tr>
         </thead>
     </table>
-    <!-- <Datatable {table}>
+<h1>Categories used in the list</h1>
+    <table>
+        <thead>
+    {#each byo_list.categories as category}
+            <tr>
+                <th >{category[0]}</th>
+                <td>{category[1]}</td>
+            </tr>
+    {/each}
+        </thead>
+    </table>
+    <Datatable {table}>
         <table>
             <thead>
                 <tr>
-                    <th>List</th>
-                    <th><img src='images/twitter-icon.png' alt='twitter icon' height='40' width='40'/></th>
-                    <th><img src='images/youtube-icon.png' alt='youtube icon' height='40' width='40'/></th>
-                    <th><img src='images/tiktok-icon.png' alt='tiktok icon' height='40' width='40'/></th>
-                    <th>Subscribe</th>
-                    <th>Unsubscribe</th>
+                    <th>First name</th>
+                    <th>Last name</th>
+                    <th>Business name</th>
+                    <th>Business type</th>
+                    <th>Languages</th>
                     <th>Categories</th>
+                    <th>Twitter</th>
+                    <th>YouTube</th>
+                    <th>TikTok</th>
                 </tr>
             </thead>
             <tbody>
-{#each table.rows as row}
-                    <tr>
-                        <td style='width:50%'>{row.name}</td>
-                        <td style='width:5%'>{row.counters['twitter']}</td>
-                        <td style='width:5%'>{row.counters['youtube']}</td>
-                        <td style='width:5%'>{row.counters['tiktok'] || 0}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-{#if row.subscribed == false}
-                            <button type="button" on:click={() => subscribe(row.url)} class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-gray-50 text-grey-800 hover:text-grey-800 focus:outline-none focus:text-blue-800 disabled:opacity-50 disabled:pointer-events-none dark:text-blue-500 dark:hover:text-blue-400 dark:focus:text-blue-400">Subscribe</button>
+{#each table.rows as block_entry}
+                <tr>
+                    <td>{block_entry.first_name || '-'}</td>
+                    <td>{block_entry.last_name || '-'}</td>
+                    <td>{block_entry.business_name || '-'}</td>
+                    <td>{block_entry.business_type || '-'}</td>
+                    <td>{block_entry.languages.toString() || '-'}</td>
+                    <td>{block_entry.categories.toString()  || '-'}</td>
+                    <td>
+{#if block_entry.twitter_handle}
+                        <a href='https://x.com/{block_entry.twitter_handle}' target=_blank>{block_entry.twitter_handle}</a>
+{:else}
+                        -
 {/if}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-{#if row.subscribed == true}
-                            <button type="button" on:click={() => unsubscribe(row.url)} class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-gray-50 text-grey-800 hover:text-grey-800 focus:outline-none focus:text-blue-800 disabled:opacity-50 disabled:pointer-events-none dark:text-blue-500 dark:hover:text-blue-400 dark:focus:text-blue-400">Unsubscribe</button>
+                    </td>
+                    <td>
+{#if block_entry.youtube_handle}
+                        <a href='https://youtube.com/@{block_entry.youtube_handle}' target=_blank>{block_entry.youtube_handle}</a>
+{:else}
+                        -
 {/if}
-                        </td>
-                        <td>{row.categories.toString()}</td>
-                    </tr>
-                {/each}
+                    </td>
+                    <td>
+{#if block_entry.tiktok_handle}
+                        <a href='https://youtube.com/{block_entry.tiktok_handle}' target=_blank>{block_entry.tiktok_handle}</a>
+{:else}
+                        -
+{/if}
+                    </td>
+                </tr>
+{/each}
             </tbody>
         </table>
-    </Datatable> -->
-{/await}
+    </Datatable>
+    {/await}
 </div>
+

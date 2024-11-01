@@ -43,7 +43,7 @@ export interface iByoListMeta {
     author_email: string
     author_name: string
     author_url: string
-    categories: iByoListCategory[]
+    categories: Object
     list_name: string
     last_updated: Date
     download_url: string
@@ -68,7 +68,7 @@ export interface iBlockEntry {
     business_type: string
     status: string
     languages: string[]
-    categories: iByoListCategory[]
+    categories: string[]
     annotations: string[]
     urls: string[]
     social_accounts: iSocialAccount[]
