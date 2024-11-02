@@ -106,7 +106,7 @@
                 bind:value={list_url}
             >
         </label>
-        <button class='bg-blue-600 px-[6px] py-[14px] mt-6 text-white font-semibold' type='submit' formaction="?/add_list">
+        <button  type='submit' formaction='?/add_list' class='bg-blue-600 px-[6px] py-[14px] mt-6 text-white font-semibold'>
             Add
         </button>
     </form>

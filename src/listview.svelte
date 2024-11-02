@@ -78,19 +78,30 @@
     {/each}
         </thead>
     </table>
-    <Datatable {table}>
+    <Datatable basic {table}>
         <table>
             <thead>
                 <tr>
-                    <th>First name</th>
-                    <th>Last name</th>
-                    <th>Business name</th>
-                    <th>Business type</th>
+                    <ThSort {table} field="first_name">First name</ThSort>
+                    <ThSort {table} field="last_name">Last name</ThSort>
+                    <ThSort {table} field=">business_name">Business</ThSort>
+                    <ThSort {table} field="business_type">Business type</ThSort>
                     <th>Languages</th>
                     <th>Categories</th>
-                    <th>Twitter</th>
-                    <th>YouTube</th>
-                    <th>TikTok</th>
+                    <ThSort {table} field="twitter">Twitter</ThSort>
+                    <ThSort {table} field="youtube">YouTube</ThSort>
+                    <ThSort {table} field="tiktok">TikTok</ThSort>
+                </tr>
+                <tr>
+                    <ThFilter {table} field='first_name' />
+                    <ThFilter {table} field='last_name' />
+                    <ThFilter {table} field='business_name' />
+                    <ThFilter {table} field='business_type' />
+                    <th></th>
+                    <th></th>
+                    <ThFilter {table} field='twitter' />
+                    <ThFilter {table} field='youtube' />
+                    <ThFilter {table} field='tiktok' />
                 </tr>
             </thead>
             <tbody>

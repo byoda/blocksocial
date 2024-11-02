@@ -1,5 +1,5 @@
 <script lang='ts'>
-    import Modal from './components/Modal.svelte'
+
     import {TableHandler, Datatable, ThSort, ThFilter } from '@vincjo/datatables';
 
     import ByoMod from './lib/byomod'
@@ -11,7 +11,7 @@
 
     let HANDLE_STORE = new HandleStore()
 
-    console.log('Extension reporting for duty')
+    console.log('Config page reporting for duty')
 
     let list_url: string = ''
 
@@ -25,36 +25,36 @@
     }
 
     function subscribe(url: string) {
-        console.log(`Subscribing to ${url}`)
-        // return async() => {
-        //     await byomod.add_list(url)
-        //     // Svelte trickery for updating lists:
-        //     // https://learn.svelte.dev/tutorial/updating-arrays-and-objects
-        //     byomod.subscribed_lists.lists = byomod.subscribed_lists.lists
-        // }
-        for (let list of byomod.list_of_lists.values()) {
-            if (list.url == url) {
-                list.subscribed = true
-                break
+        return async() => {
+            console.log(`Subscribing to ${url}`)
+            await byomod.add_list(url)
+            // Svelte trickery for updating lists:
+            // https://learn.svelte.dev/tutorial/updating-arrays-and-objects
+            byomod.subscribed_lists.lists = byomod.subscribed_lists.lists
+
+            for (let list of byomod.list_of_lists.values()) {
+                if (list.url == url) {
+                    list.subscribed = true
+                    break
+                }
             }
         }
     }
     function unsubscribe(url: string) {
         console.log(`Unsubscribing from ${url}`)
-        // return async() => {
-        //     await byomod.add_list(url)
-        //     // Svelte trickery for updating lists:
-        //     // https://learn.svelte.dev/tutorial/updating-arrays-and-objects
-        //     byomod.subscribed_lists.lists = byomod.subscribed_lists.lists
-        // }
-        for (let list of byomod.list_of_lists.values()) {
-            if (list.url == url) {
-                list.subscribed = false
-                break
+        return async() => {
+            await byomod.add_list(url)
+            // Svelte trickery for updating lists:
+            // https://learn.svelte.dev/tutorial/updating-arrays-and-objects
+            byomod.subscribed_lists.lists = byomod.subscribed_lists.lists
+            for (let list of byomod.list_of_lists.values()) {
+                if (list.url == url) {
+                    list.subscribed = false
+                    break
+                }
             }
         }
     }
-
 </script>
 <h2>Available Lists</h2>
 <div class='container mx-auto px-0 '>

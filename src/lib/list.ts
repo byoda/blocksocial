@@ -2,9 +2,7 @@
 
 import * as yaml from 'js-yaml';
 
-import type {
-    iByoList, iBlockEntry, iSocialAccount, iByoListCategory
-} from './datatypes';
+import type {iByoList, iBlockEntry, iSocialAccount} from './datatypes';
 
 import HandleStore from '../lib/handle_store/handle_store'
 
@@ -22,6 +20,7 @@ export default class ByoList {
     last_updated: Date | undefined
     categories: Map<string, string> | undefined
     block_entries: BlockEntry[] = []
+    subscribed: boolean = false
 
     constructor(url: string | URL) {
         this.storage = new ByoStorage();
@@ -67,23 +66,20 @@ export default class ByoList {
         return true;
     }
 
-    get_keyname(key: string): string {
-        return `${key}`;
-    }
 
     async load(): Promise<iByoList> {
         /**
         Load the list from storage
         **/
 
-        let key: string = this.get_keyname(`list_${this.download_url.href}`);
+        let key: string = this.get_keyname(this.download_url.href);
         let list_data: iByoList = await this.storage.get(key) as iByoList;
 
             if (list_data === undefined) {
-                console.log(`No data in storage for list ${this.download_url.href}`);
-                return list_data;
+                console.log(`No data in storage for list ${this.download_url.href}`)
             }
-        return list_data
+
+            return list_data
     }
 
     async save(list: iByoList | undefined = undefined): Promise<void> {
@@ -93,13 +89,40 @@ export default class ByoList {
             }
             list = this.list;
         }
-        let key: string = this.get_keyname(`list_${this.download_url.href}`);
+        let key: string = this.get_keyname(this.download_url.href);
         console.log(`Saving list to: ${key}`);
 
         this.storage.set_sync(key, list);
     }
 
-    async download(): Promise<iByoList> {
+    get_accounts_by_platform(platform: string): iSocialAccount[] {
+        let accounts: iSocialAccount[] = [];
+        for (let block_entry of this.block_entries) {
+            if (block_entry.social_accounts === undefined) {
+                continue
+            }
+            if (! block_entry.social_accounts.has(platform)) {
+                continue
+            }
+            for (let social_account of block_entry.social_accounts?.get(platform)) {
+                accounts.push(social_account);
+            }
+        }
+        return accounts
+    }
+
+
+    async store_social_accounts(handle_store: HandleStore, platform: string) {
+        let accounts: iSocialAccount[] = this.get_accounts_by_platform(platform)
+        for (let account of accounts) {
+            handle_store.add(account.handle, platform)
+        }
+    }
+
+    private async download(): Promise<iByoList> {
+        /**
+         * Download the list from the URL.
+         */
         let response: Response = await fetch(this.download_url.href);
         if (response.status === 200) {
             let text: string = await response.text();
@@ -121,7 +144,7 @@ export default class ByoList {
             this.block_entries.push(block_entry);
         }
     }
-    
+
     private convert_categories(category_data: Object) {
         if (category_data === undefined) {
             this.categories = new Map<string, string>()
@@ -135,29 +158,12 @@ export default class ByoList {
         }
     }
 
-    get_accounts_by_platform(platform: string): iSocialAccount[] {
-        if (this.list === undefined || this.list.block_list === undefined) {
-            return []
-        }
-        let accounts: iSocialAccount[] = [];
-        for (let block_entry of this.block_entries) {
-            if (! block_entry.social_accounts.has(platform)) {
-                continue
-            }
-            for (let social_account of block_entry.social_accounts.get(platform)!) {
-                accounts.push(social_account);
-            }
-        }
-        return accounts
+    private get_keyname(key: string): string {
+        /**
+         * Get the keyname for the list in storage
+         */
+        return `list_${key}`;
     }
-
-    async store_social_accounts(handle_store: HandleStore, platform: string) {
-        let accounts: iSocialAccount[] = this.get_accounts_by_platform(platform)
-        for (let account of accounts) {
-            handle_store.add(account.handle, platform)
-        }
-    }
-
     // Used for test purposes
     // from_file(filename: string): number {
     //     let text: string = fs.readFileSync(filename, 'utf8');

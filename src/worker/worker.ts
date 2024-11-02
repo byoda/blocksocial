@@ -33,12 +33,12 @@ function launch_grab_tokens(details: browser.WebRequest.OnBeforeSendHeadersDetai
     return {cancel: false} as browser.WebRequest.BlockingResponse
 }
 
-async function block_social_accounts() {
-    let wait_time: number = 1 * 1000
-    let between_runs_wait_time: number = 60 * 1000
+async function run_social_accounts() {
+    let wait_time: number = 1 * 1000    // 1 second
+    let between_runs_wait_time: number = 60 * 1000  // 1 minute
     while (true) {
         console.log('Blocking social accounts run')
-        let accounts: StoredSocialAccount[] = await HANDLE_STORE.get_by_status(SocialAccountStoredStatus.NEW)
+        let accounts: StoredSocialAccount[] = await HANDLE_STORE.get_by_status(SocialAccountStoredStatus.TO_BLOCK)
         if (accounts.length === 0) {
             console.log(`No accounts to block, sleeping ${Math.floor(between_runs_wait_time / 1000)} seconds`)
             await delay(between_runs_wait_time)
@@ -52,12 +52,8 @@ async function block_social_accounts() {
             continue
         }
         for (let account of accounts) {
-            if (account === undefined) {
-                console.log('Undefined account')
-                continue
-            }
-            // console.log(`Blocking account: ${account.handle}`)
             try {
+                await HANDLE_STORE.update_status(account.handle, account.platform, SocialAccountStoredStatus.ATTEMPTED_BLOCK)
                 let result: boolean = await TwitterAccount.block_handle(account.handle, twitter_auth)
                 if (result) {
                     await HANDLE_STORE.update_status(account.handle, account.platform, SocialAccountStoredStatus.BLOCKED)
@@ -73,7 +69,9 @@ async function block_social_accounts() {
                     }
             } catch (exc) {
                 console.log(`Exception blocking handle ${account.handle}on Twitter: ${exc}`)
-                wait_time *= 2
+                if (wait_time < 300 * 1000) {
+                    wait_time *= 2
+                }
             }
             console.log(`Sleeping ${Math.floor(wait_time / 1000)} seconds before next block`)
             await delay(wait_time)
@@ -82,8 +80,9 @@ async function block_social_accounts() {
 }
 
 console.log('Worker loaded')
-block_social_accounts()
+run_social_accounts()
 
+// Grad authentication tokens
 browser.webRequest.onBeforeSendHeaders.addListener(
     launch_grab_tokens,
     {urls: ["<all_urls>"]},

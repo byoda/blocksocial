@@ -1,4 +1,3 @@
-import { exec } from "child_process";
 import svelte from "rollup-plugin-svelte";
 import commonjs from "@rollup/plugin-commonjs";
 import resolve from "@rollup/plugin-node-resolve";
@@ -18,33 +17,6 @@ import nodePolyfills from 'rollup-plugin-polyfill-node';
 // const buildEnv = process.env.BUILD_ENV;
 const production = false;
 const buildEnv = "chrome";
-
-function serve() {
-    return {
-        writeBundle() {
-            // Open Brave browser with the specified URL
-            if (production) {
-                const manifestSource = buildEnv === 'firefox' ? 'manifests/manifest_firefox.json' : 'manifests/manifest_chrome.json';
-                const manifestDest = 'public/manifest.json';
-                fs.copyFileSync(manifestSource, manifestDest);
-            } else {
-                let command;
-                if (os.platform() === "linux") {
-                    command = "google-chrome --remote-debugging-port=9222  --reload-extension=public/build";
-                } else {
-                    command = "C:/Program\ Files/Google\\Chrome/Application/chrome.exe --remote-debugging-port=9222 --reload-extension=public/build";
-                }
-
-                // Open Brave browser with the specified URL
-                // exec(command, (err) => {
-                //  if (err) {
-                //    console.error("Failed to open Chrome:", err);
-                //  }
-                //});
-            }
-        },
-    };
-}
 
 function buildConfig(inputFileName, outputFileName) {
     return {

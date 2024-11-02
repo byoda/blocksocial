@@ -1,5 +1,3 @@
-import type { iListOfLists } from "./datatypes";
-
 export default class ByoStorage {
     storage: Storage;
 
@@ -29,31 +27,15 @@ export default class ByoStorage {
         return data
     }
 
-    load_subscribed_lists_sync(): iListOfLists {
+    load_subscribed_lists_sync(): Set<string> {
         let key: string = `subscribed_lists`;
         const parsed = this.get_sync(key);
-        if (this.isListOfLists(parsed)) {
-            let data: iListOfLists = parsed as iListOfLists;
+        let data: Set<string> = parsed as Set<string>;
             return data
-        };
-
-        return { lists: new Set<string>() };
     }
 
-    save_subscribed_lists_sync(value: iListOfLists) {
+    save_subscribed_lists_sync(value: Set<string>) {
         let key: string = `subscribed_lists`;
-        this.set_sync(key, value);
-    }
-
-    isListOfLists(obj: any): obj is iListOfLists {
-        // console.log('Got list of lists:', JSON.stringify(obj));
-        if (obj === undefined) {
-            return false;
-        }
-        return obj.lists !== undefined;
-    }
-
-    isList(obj: any): obj is Set<string> {
-        return obj instanceof Set;
+        this.set_sync(key, Array.from(value.values()))
     }
 }

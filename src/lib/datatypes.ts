@@ -1,8 +1,10 @@
 export enum SocialAccountStoredStatus {
+    TO_BLOCK = 'TO_BLOCK',
     BLOCKED = 'BLOCKED',
+    ATTEMPTED_BLOCK = 'ATTEMPTED_BLOCK',
     UNBLOCKED = 'UNBLOCKED',
-    NEW = 'NEW',
-    ATTEMPTED = 'ATTEMPTED',
+    TO_UNBLOCK = 'TO_UNBLOCK',
+    ATTEMPTED_UNBLOCK = 'ATTEMPTED_UNBLOCK',
 }
 
 export interface iSocialNetworkAuth {

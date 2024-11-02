@@ -33,7 +33,7 @@ export default class HandleStore extends Dexie {
         )
     }
 
-    async add(handle: string, platform: string, block_status: string = SocialAccountStoredStatus.NEW): Promise<void> {
+    async add(handle: string, platform: string, block_status: string = SocialAccountStoredStatus.TO_BLOCK): Promise<void> {
         let key: string = this.get_key(handle, platform)
         if (await this.get(handle, platform) !== undefined) {
             console.log(`Handle already exists: ${key}`)

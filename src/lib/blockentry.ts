@@ -46,9 +46,7 @@ export default class BlockEntry {
         if (! this.social_accounts.has(platform)) {
             return undefined
         }
-        console.log('get_primary_account', platform);
         for (let account of this.social_accounts.get(platform)!) {
-            console.log('get_primary_account', platform, account.handle, account.is_primary);
             if (account.is_primary) {
                 return account;
             }
