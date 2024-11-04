@@ -7,6 +7,13 @@ export enum SocialAccountStoredStatus {
     ATTEMPTED_UNBLOCK = 'ATTEMPTED_UNBLOCK',
 }
 
+export enum AuthTokenType {
+    JWT = 'jwt',
+    CSRF = 'csrf_token',
+    AUTH_COOKIE = 'auth_cookie',
+    GRAPHQL_TOKEN = 'graphql_token',
+}
+
 export interface iSocialNetworkAuth {
     name: string
     jwt: string | undefined
@@ -17,6 +24,9 @@ export interface iSocialNetworkAuth {
     // Twitter GraphQL APIs use a token in the GET URL, ie.
     // https://x.com/i/api/graphql/<token>/BlockedAccounts
     graphql_token: string | undefined
+
+    // Twitter also needs a cookie value for auth
+    cookie_auth: string | undefined
 }
 
 
@@ -35,13 +45,13 @@ export interface iListStat {
     subscribed: boolean | undefined
 }
 
-export interface iByoList {
-    meta: iByoListMeta
+export interface IBlockList {
+    meta: IBlockListMeta
     block_list: iBlockEntry[]
     trust_list: string[]
 }
 
-export interface iByoListMeta {
+export interface IBlockListMeta {
     author_email: string
     author_name: string
     author_url: string
@@ -51,7 +61,7 @@ export interface iByoListMeta {
     download_url: string
 }
 
-export interface iByoListCategory {
+export interface IBlockListCategory {
     name: string
     description: string
 }

@@ -2,7 +2,7 @@
 
 import * as yaml from 'js-yaml';
 
-import type {iByoList, iBlockEntry, iSocialAccount} from './datatypes';
+import type {IBlockList, iBlockEntry, iSocialAccount} from './datatypes';
 
 import HandleStore from '../lib/handle_store/handle_store'
 
@@ -10,9 +10,12 @@ import ByoStorage from './storage';
 import BlockEntry from './blockentry';
 
 export default class ByoList {
+    /*
+    A list that user may or may not be subscribed to.
+    */
     storage: ByoStorage;
     download_url: URL
-    list: iByoList | undefined
+    list: IBlockList | undefined
     author_name: string | undefined
     author_email: string | undefined
     author_url: string | undefined
@@ -43,7 +46,7 @@ export default class ByoList {
         Returns true if the list was loaded or downloaded successfully.
         */
 
-        let list_data: iByoList
+        let list_data: IBlockList
 
         if (max_age != 0) {
             try {
@@ -67,13 +70,13 @@ export default class ByoList {
     }
 
 
-    async load(): Promise<iByoList> {
+    async load(): Promise<IBlockList> {
         /**
         Load the list from storage
         **/
 
         let key: string = this.get_keyname(this.download_url.href);
-        let list_data: iByoList = await this.storage.get(key) as iByoList;
+        let list_data: IBlockList = this.storage.get(key) as IBlockList;
 
             if (list_data === undefined) {
                 console.log(`No data in storage for list ${this.download_url.href}`)
@@ -82,7 +85,7 @@ export default class ByoList {
             return list_data
     }
 
-    async save(list: iByoList | undefined = undefined): Promise<void> {
+    async save(list: IBlockList | undefined = undefined): Promise<void> {
         if (list === undefined) {
             if (this.list === undefined) {
                 throw new Error('No list to save')
@@ -92,20 +95,21 @@ export default class ByoList {
         let key: string = this.get_keyname(this.download_url.href);
         console.log(`Saving list to: ${key}`);
 
-        this.storage.set_sync(key, list);
+        this.storage.set(key, list);
     }
 
     get_accounts_by_platform(platform: string): iSocialAccount[] {
         let accounts: iSocialAccount[] = [];
-        for (let block_entry of this.block_entries) {
-            if (block_entry.social_accounts === undefined) {
+
+        let block_entry: BlockEntry
+        for (block_entry of this.block_entries || []) {
+            if (! block_entry.social_accounts?.has(platform)) {
                 continue
             }
-            if (! block_entry.social_accounts.has(platform)) {
-                continue
-            }
-            for (let social_account of block_entry.social_accounts?.get(platform)) {
-                accounts.push(social_account);
+            for (let social_account of block_entry.social_accounts.get(platform) || []) {
+                if (social_account !== undefined) {
+                    accounts.push(social_account)
+                }
             }
         }
         return accounts
@@ -119,14 +123,14 @@ export default class ByoList {
         }
     }
 
-    private async download(): Promise<iByoList> {
+    private async download(): Promise<IBlockList> {
         /**
          * Download the list from the URL.
          */
         let response: Response = await fetch(this.download_url.href);
         if (response.status === 200) {
             let text: string = await response.text();
-            let list_data: iByoList = yaml.load(text) as iByoList;
+            let list_data: IBlockList = yaml.load(text) as IBlockList;
             console.log(
                 'Downloaded list:', this.download_url.href, 'with',
                 list_data.block_list.length, 'entries'
@@ -167,7 +171,7 @@ export default class ByoList {
     // Used for test purposes
     // from_file(filename: string): number {
     //     let text: string = fs.readFileSync(filename, 'utf8');
-    //     let data: iByoList = yaml.load(text) as iByoList ;
+    //     let data: IBlockList = yaml.load(text) as IBlockList ;
     //     this.list = data;
     //     return this.list.block_list.length;
     // }

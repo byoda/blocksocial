@@ -1,11 +1,11 @@
 // Class for storing secrets by the service worker
 
-import Dexie, { type Table } from 'dexie';
+import Dexie, { type Table } from 'dexie'
 
-import StoredSecret from './stored_secrets';
+import StoredSecret from './stored_secrets'
 
-import type { iSocialNetworkAuth } from '../datatypes';
-
+import type { iSocialNetworkAuth } from '../datatypes'
+import { AuthTokenType } from '../datatypes'
 
 export default class SecretStore extends Dexie {
     secrets!: Table<StoredSecret, 'key_id'>
@@ -20,23 +20,26 @@ export default class SecretStore extends Dexie {
         this.secrets.mapToClass(StoredSecret)
     }
 
-    get_key_id(platform: string, secret_type: string): string {
-        return `${platform}_${secret_type}`
+    get_key_id(platform: string, secret_type: AuthTokenType): string {
+        return `${platform}_${secret_type.valueOf()}`
     }
 
     async upsert(auth: iSocialNetworkAuth, platform: string): Promise<void> {
-        let secret_types: string[] = ['jwt', 'csrf_token', 'graphql_token']
         let value: string | undefined = undefined
-        for (let secret_type of secret_types) {
-            if (secret_type == 'jwt') {
+        console.log('Hello there, upserting')
+        for (let secret_type_str in AuthTokenType) {
+            const secret_type: AuthTokenType = AuthTokenType[secret_type_str] as AuthTokenType
+            if (secret_type == AuthTokenType.JWT) {
                 value = auth.jwt
-            } else if (secret_type == 'csrf_token') {
+            } else if (secret_type == AuthTokenType.CSRF) {
                 value = auth.csrf_token
-            } else if (secret_type == 'graphql_token') {
+            } else if (secret_type == AuthTokenType.GRAPHQL_TOKEN) {
                 value = auth.graphql_token
+            } else if (secret_type == AuthTokenType.AUTH_COOKIE) {
+                value = auth.cookie_auth
             }
             if (value === undefined) {
-                if (secret_type !== 'graphql_token') {
+                if (secret_type !== AuthTokenType.GRAPHQL_TOKEN) {
                     console.log('No value for secret type: ' + secret_type)
                 }
                 continue
@@ -50,11 +53,11 @@ export default class SecretStore extends Dexie {
             } as StoredSecret
 
             let new_key_id = await this.secrets.put(data)
-            // console.log(`Upserted: ${key_id}: ${value}, returned key_id ${new_key_id}`)
+            console.log(`Upserted: ${key_id}: ${value}, returned key_id ${new_key_id}`)
 
             // let new_data = await this.secrets.get(new_key_id)
             // console.log('Validate SECRET_STORE works: ', new_data)
-        }
+            }
     }
 
     async get_by_platform(platform: string): Promise<StoredSecret[]> {

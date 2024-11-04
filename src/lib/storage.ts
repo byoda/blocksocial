@@ -5,7 +5,7 @@ export default class ByoStorage {
         this.storage = window.localStorage;
     }
 
-    get_sync(key: string): object | undefined {
+    get(key: string): object | undefined {
         let text: string | null = this.storage.getItem(key);
         if (text == undefined) {
             return undefined;
@@ -14,28 +14,23 @@ export default class ByoStorage {
         return data
     }
 
-    set_sync(key: string, value: object) {
+    set(key: string, value: object) {
         this.storage.setItem(key, JSON.stringify(value));
     }
 
-    async get(key: string): Promise<object | undefined> {
-        let text: string | null = this.storage.getItem(key);
-        if (text == undefined) {
-            return undefined;
-        }
-        let data: object = JSON.parse(text);
+    load_subscribed_lists_sync(): Set<string> {
+        let key: string = this.get_subscribed_lists_key()
+        const parsed = this.get(key)
+        let data: Set<string> = parsed as Set<string>
         return data
     }
 
-    load_subscribed_lists_sync(): Set<string> {
-        let key: string = `subscribed_lists`;
-        const parsed = this.get_sync(key);
-        let data: Set<string> = parsed as Set<string>;
-            return data
+    save_subscribed_lists_sync(value: Set<string>) {
+        let key: string = this.get_subscribed_lists_key()
+        this.set(key, Array.from(value.values()))
     }
 
-    save_subscribed_lists_sync(value: Set<string>) {
-        let key: string = `subscribed_lists`;
-        this.set_sync(key, Array.from(value.values()))
+    private get_subscribed_lists_key(): string {
+        return `subscribed_lists`
     }
 }

@@ -30,7 +30,7 @@
         await byomod.add_list(list_url)
         // Svelte trickery for updating lists:
         // https://learn.svelte.dev/tutorial/updating-arrays-and-objects
-        byomod.subscribed_lists.lists = byomod.subscribed_lists.lists
+        byomod.subscribed_lists = byomod.subscribed_lists
         list_url = ''
     }
 

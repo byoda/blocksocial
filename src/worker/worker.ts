@@ -11,8 +11,7 @@ import browser from 'webextension-polyfill';
 
 import SecretStore from '../lib/secret_store/secret_store'
 import HandleStore from '../lib/handle_store/handle_store'
-import grab_auth_tokens from './auth_tokens'
-import { get_twitter_auth } from './auth_tokens'
+import grab_auth_tokens, { get_twitter_auth } from './auth_tokens'
 
 import { SocialAccountStoredStatus } from '../lib/datatypes';
 import StoredSocialAccount from '../lib/handle_store/stored_social_account';
@@ -79,6 +78,7 @@ async function run_social_accounts() {
     }
 }
 
+
 console.log('Worker loaded')
 run_social_accounts()
 
@@ -86,5 +86,5 @@ run_social_accounts()
 browser.webRequest.onBeforeSendHeaders.addListener(
     launch_grab_tokens,
     {urls: ["<all_urls>"]},
-    ['requestHeaders']
+    ['requestHeaders', 'extraHeaders']
 )
