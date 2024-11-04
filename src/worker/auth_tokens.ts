@@ -46,13 +46,7 @@ export default function grab_auth_tokens(secret_store: SecretStore, details: bro
     let url: URL = new URL(details.url)
     let fqdn: string = url.hostname.toLowerCase()
 
-    let social_domain: string | undefined = get_social_domain(fqdn)
-    if (social_domain === undefined ) {
-        console.log('No supported social network for domain: ' + fqdn)
-        return
-    }
-
-    let social_network: SocialNetwork | undefined = SOCIAL_NETWORKS_BY_DOMAIN.get(social_domain)
+    let social_network: SocialNetwork | undefined = get_social_network(fqdn)
     if (social_network === undefined) {
         console.log('No social network for domain: ' + fqdn)
         return
@@ -64,6 +58,7 @@ export default function grab_auth_tokens(secret_store: SecretStore, details: bro
         graphql_token: undefined,
         cookie_auth: undefined
     }
+
     let headers: browser.WebRequest.HttpHeaders | undefined = details.requestHeaders
     if (headers == undefined) {
         return
@@ -76,30 +71,20 @@ export default function grab_auth_tokens(secret_store: SecretStore, details: bro
             network_auth.csrf_token = headers[i].value
         } else if (headers[i].name == 'Cookie') {
             network_auth.cookie_auth = parse_cookie(headers[i].value || '', 'auth_token')
-            console.log('Grabbed cookie auth token: ' + network_auth.cookie_auth)
         }
-    }
-    console.log('hello there #1')
-    if (network_auth.jwt == undefined
-            || network_auth.csrf_token == undefined) {
-        console.log(`Unauthenticated API call to ${url.href}`)
-        return
     }
 
     // We're not using GraphQL tokens yet for Twitter/X
     // network_auth.graphql_token = extract_twitter_graphql_token(url.href)
 
     let now = Math.round(Date.now() / 1000)
-    console.log('hello there #2')
+    console.log(`Now ${now}, JWT expires: ${TWITTER_JWT.expires}`)
 
     if (network_auth.name == 'Twitter') {
-        if (false && TWITTER_JWT
+        if (false
                 && TWITTER_JWT.expires > now
-                && TWITTER_CSRF_TOKEN
                 && TWITTER_CSRF_TOKEN.expires > now
-                && TWITTER_GRAPHQL_TOKEN
                 && TWITTER_GRAPHQL_TOKEN.expires > now
-                && TWITTER_COOKIE_AUTH_TOKEN
                 && TWITTER_COOKIE_AUTH_TOKEN.expires > now) {
             console.log('JWT, CSRF and Cookie auth token already found for Twitter and they have not yet expired!')
             return
@@ -127,7 +112,7 @@ function extract_twitter_graphql_token(href: string): string | undefined {
     return graphql_token
 }
 
-function get_social_domain(fqdn: string): string | undefined {
+function get_social_network(fqdn: string): SocialNetwork | undefined {
     let fqdn_parts: string[] = fqdn.split('.')
     if (fqdn_parts.length < 2) {
         return undefined
@@ -136,10 +121,7 @@ function get_social_domain(fqdn: string): string | undefined {
     let domain: string = fqdn_parts[fqdn_parts.length - 2]
 
     let social_domain: string = `${domain}.${tld}`
-    if (!(SOCIAL_NETWORKS_BY_DOMAIN.has(social_domain))) {
-        return undefined
-    }
-    return social_domain
+    return SOCIAL_NETWORKS_BY_DOMAIN.get(social_domain)
 }
 
 export async function get_twitter_auth(secret_store: SecretStore): Promise<iSocialNetworkAuth> {
@@ -152,16 +134,16 @@ export async function get_twitter_auth(secret_store: SecretStore): Promise<iSoci
         cookie_auth: undefined
     }
     for (let secret of secrets) {
-        if (secret.secret_type == 'jwt') {
+        if (secret.auth_token_type == 'jwt') {
             auth_tokens.jwt = secret.value
-        } else if (secret.secret_type == 'csrf_token') {
-            TWITTER_CSRF_TOKEN = new AuthToken(secret.secret_type, secret.value)
+        } else if (secret.auth_token_type == 'csrf_token') {
+            TWITTER_CSRF_TOKEN = new AuthToken(secret.auth_token_type, secret.value)
             auth_tokens.csrf_token = secret.value
-        } else if (secret.secret_type == 'auth_cookie') {
-            TWITTER_COOKIE_AUTH_TOKEN = new AuthToken(secret.secret_type, secret.value)
+        } else if (secret.auth_token_type == 'auth_cookie') {
+            TWITTER_COOKIE_AUTH_TOKEN = new AuthToken(secret.auth_token_type, secret.value)
             auth_tokens.cookie_auth = secret.value
-        } else if (secret.secret_type == 'graphql_token') {
-            TWITTER_GRAPHQL_TOKEN = new AuthToken(secret.secret_type, secret.value)
+        } else if (secret.auth_token_type == 'graphql_token') {
+            TWITTER_GRAPHQL_TOKEN = new AuthToken(secret.auth_token_type, secret.value)
             auth_tokens.graphql_token = secret.value
         }
     }

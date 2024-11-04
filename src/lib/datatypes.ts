@@ -9,9 +9,24 @@ export enum SocialAccountStoredStatus {
 
 export enum AuthTokenType {
     JWT = 'jwt',
-    CSRF = 'csrf_token',
+    CSRF_TOKEN = 'csrf_token',
     AUTH_COOKIE = 'auth_cookie',
     GRAPHQL_TOKEN = 'graphql_token',
+}
+
+export function string_to_auth_token_type(value: string): AuthTokenType {
+    switch (value.toLowerCase()) {
+        case 'jwt':
+            return AuthTokenType.JWT
+        case 'csrf_token':
+            return AuthTokenType.CSRF_TOKEN
+        case 'auth_cookie':
+            return AuthTokenType.AUTH_COOKIE
+        case 'graphql_token':
+            return AuthTokenType.GRAPHQL_TOKEN
+        default:
+            throw new Error(`Unknown AuthTokenType: ${value}`)
+    }
 }
 
 export interface iSocialNetworkAuth {
