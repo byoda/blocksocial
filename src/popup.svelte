@@ -1,7 +1,4 @@
-<!-- @migration-task Error while migrating Svelte code: `<tr>` is invalid inside `<table>` -->
 <script lang='ts'>
-    // inspect extension/service_worker with chrome://inspect/
-
     import browser from 'webextension-polyfill';
 
     import { popup } from '@skeletonlabs/skeleton';
@@ -14,7 +11,7 @@
 
     let HANDLE_STORE = new HandleStore()
 
-    console.log('Extension reporting for duty')
+    console.log('Popup reporting for duty')
 
     let list_url: string = ''
 

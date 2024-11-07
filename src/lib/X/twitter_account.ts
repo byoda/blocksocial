@@ -1,19 +1,17 @@
 console.log('TwitterAccount.ts loaded')
-import type {iSocialNetworkAuth} from '..//datatypes'
 
-const block_endpointURL: string = 'https://x.com/i/api/1.1/blocks/create.json'
-const unblock_endpointURL: string = 'https://api.x.com/1.1/blocks/destroy.json'
-// const blocks_endpointURL: string = 'https://api.x.com/2/users/:id/blocking'
-const blocks_endpointURL: string = 'https://api.x.com/1.1/blocks/list.json?cursor=-1'
-// const user_id: string = '1552795969959636992'
-// const my_user_id: string = '2250704250'
+import TwitterAuth from '../auth/auth_tokens'
 
-export interface iTwitterPaginatedResponse<T> {
+const block_url: string = 'https://x.com/i/api/1.1/blocks/create.json'
+const unblock_url: string = 'https://api.x.com/1.1/blocks/destroy.json'
+const list_blocks_url: string = 'https://api.x.com/1.1/blocks/list.json'
+
+export interface ITwitterPaginatedResponse<T> {
     data: T[]
     paging_token: string | undefined
 }
 
-export interface iTwitterUser {
+export interface ITwitterUser {
     id: string
     name: string
     username: string
@@ -21,43 +19,57 @@ export interface iTwitterUser {
 
 
 export default class TwitterAccount {
-    public static async get_blocked_handles(
-        auth_tokens: iSocialNetworkAuth
-    ): Promise<iTwitterUser[] | undefined> {
-        //
-        // This doesn't work as we don't know how to generate a new token
-        // for GraphQL requests
-        //
+    /**
+     * Manages blocking and unblocking Twitter handles for a Twitter account.
+     * @param auth
+     * @returns
+     */
+    auth: TwitterAuth
+
+    constructor(auth: TwitterAuth | undefined = undefined) {
+        if (auth) {
+            this.auth = auth
+        } else {
+            this.auth = new TwitterAuth(
+                undefined, undefined, undefined, undefined, 0
+            )
+        }
+    }
+
+    public async get_blocked_handles(): Promise<ITwitterUser[] | undefined> {
+        /**
+         * Gets a list of Twitter handles that are blocked by the authenticated user.
+         *
+         * @returns A promise that resolves to a list of Twitter handles that
+         * are blocked by the authenticated user or undefined if the Twitter API
+         * request fails.
+         *  @see {@link https://developer.x.com/en/docs/x-api/v1/accounts-and-users/mute-block-report-users/api-reference/get-blocks-list | Twitter API Documentation}
+         */
         console.log('Getting blocked Twitter handles')
         let paging_token: string | undefined = undefined
-        let users: iTwitterUser[] = []
-        if (auth_tokens.jwt === undefined || auth_tokens.csrf_token === undefined) {
+        let users: ITwitterUser[] = []
+        if (this.auth === undefined) {
             console.log('No auth tokens found')
             return undefined
         }
-        let csrfToken: string | undefined = auth_tokens!.csrf_token
-        let authToken: string | undefined = auth_tokens!.jwt
 
-        let cookie_auth_token: string = 'da0f018d0b02064ef73dd1fe65208d1516b00a77'
-        let cookie: string = 'ct0=' + csrfToken + ';auth_token=' + cookie_auth_token + ';'
         do {
             try {
+                let cookie_header: string = `ct0=${this.auth.csrf_token}, auth_token=${this.auth.cookie_auth}`
                 const response = await fetch(
-                    blocks_endpointURL,
+                    list_blocks_url,
                     {
                         method: 'GET',
                         headers: {
-                            'authorization': authToken,
-                            'X-Csrf-Token': csrfToken,
-                            'Cookie': cookie,
-                            'Origin': 'https://x.com',
+                            'authorization': this.auth.jwt!,
+                            'X-Csrf-Token': this.auth.csrf_token!,
+                            'Cookie': cookie_header,
                         },
                         credentials: 'include',
-                        // mode: 'no-cors',
                     }
                 )
                 if (response.status === 200) {
-                    let data = await response.json() as iTwitterPaginatedResponse<iTwitterUser>
+                    let data = await response.json() as ITwitterPaginatedResponse<ITwitterUser>
                     console.log(data)
                     users.push(...data.data)
                 } else {
@@ -85,22 +97,21 @@ export default class TwitterAccount {
      *
      * @see {@link https://developer.x.com/en/docs/x-api/v1/accounts-and-users/mute-block-report-users/api-reference/post-blocks-create | Twitter API Documentation}
      */
-    public static async block_handle(handle: string, auth_tokens: iSocialNetworkAuth): Promise<boolean> {
+    public async block_handle(handle: string): Promise<boolean> {
         console.log(`Blocking Twitter handle ${handle}`)
+        let auth: TwitterAuth = this.auth
         try {
-            let csrfToken: string | undefined = auth_tokens!.csrf_token
-            let authToken: string | undefined = auth_tokens!.jwt
-            if (authToken === undefined || csrfToken === undefined) {
+            if (this.auth.jwt === undefined || this.auth.csrf_token === undefined) {
                 console.log('No auth tokens found')
                 return false
             }
             const response = await fetch(
-                block_endpointURL,
+                block_url,
                 {
                     method: 'POST',
                     headers: {
-                        'authorization': authToken!,
-                        'X-Csrf-Token': csrfToken!,
+                        'authorization': auth.jwt!,
+                        'X-Csrf-Token': auth.csrf_token!,
                         // Twitter POST body is plain text instead of form urlencoded
                         'Content-Type': 'application/x-www-form-urlencoded',
                     },
@@ -109,7 +120,6 @@ export default class TwitterAccount {
                 }
             )
             if (response.status === 200) {
-                let data = await response.json()
                 console.log(`Blocked Twitter handle: ${handle}`)
                 return true
             } else if (response.status === 404) {

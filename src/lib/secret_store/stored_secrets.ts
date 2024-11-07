@@ -1,13 +1,14 @@
 import { Entity } from 'dexie';
 
 import type SecretStore from './secret_store';
-import {AuthTokenType} from '../datatypes'
+import {AuthTokenType} from '../auth/auth_tokens'
 
 export default class StoredSecret extends Entity<SecretStore> {
     key_id!: string
     platform!: string
     auth_token_type!: AuthTokenType
     value!: string
+    expires!: number
 
     get_key_id(platform: string, auth_token_type: AuthTokenType): string {
         return `${platform}_${auth_token_type.valueOf()}`
@@ -22,7 +23,7 @@ export default class StoredSecret extends Entity<SecretStore> {
         )
     }
 
-    async add(platform: string, auth_token_type: AuthTokenType, value: string): Promise<void> {
+    async add(platform: string, auth_token_type: AuthTokenType, value: string, expires: number): Promise<void> {
         this.key_id = this.get_key_id(platform, auth_token_type)
         this.platform = platform
         this.auth_token_type = auth_token_type
@@ -32,7 +33,8 @@ export default class StoredSecret extends Entity<SecretStore> {
             {
                 platform: platform,
                 auth_token_type: auth_token_type.valueOf(),
-                value: value
+                value: value,
+                expires: expires
             } as StoredSecret
         )
     }

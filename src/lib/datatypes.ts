@@ -6,30 +6,45 @@ export enum SocialAccountStoredStatus {
     TO_UNBLOCK = 'TO_UNBLOCK',
     ATTEMPTED_UNBLOCK = 'ATTEMPTED_UNBLOCK',
 }
-
-export enum AuthTokenType {
-    JWT = 'jwt',
-    CSRF_TOKEN = 'csrf_token',
-    AUTH_COOKIE = 'auth_cookie',
-    GRAPHQL_TOKEN = 'graphql_token',
-}
-
-export function string_to_auth_token_type(value: string): AuthTokenType {
+export function string_to_social_account_stored_status(value: string): SocialAccountStoredStatus {
     switch (value.toLowerCase()) {
-        case 'jwt':
-            return AuthTokenType.JWT
-        case 'csrf_token':
-            return AuthTokenType.CSRF_TOKEN
-        case 'auth_cookie':
-            return AuthTokenType.AUTH_COOKIE
-        case 'graphql_token':
-            return AuthTokenType.GRAPHQL_TOKEN
+        case 'to_block':
+            return SocialAccountStoredStatus.TO_BLOCK
+        case 'blocked':
+            return SocialAccountStoredStatus.BLOCKED
+        case 'attempted_block':
+            return SocialAccountStoredStatus.ATTEMPTED_BLOCK
+        case 'unblocked':
+            return SocialAccountStoredStatus.UNBLOCKED
+        case 'to_unblock':
+            return SocialAccountStoredStatus.TO_UNBLOCK
+        case 'attempted_unblock':
+            return SocialAccountStoredStatus.ATTEMPTED_UNBLOCK
         default:
-            throw new Error(`Unknown AuthTokenType: ${value}`)
+            throw new Error(`Unknown SocialAccountStoredStatus: ${value}`)
     }
 }
 
-export interface iSocialNetworkAuth {
+export enum PlatformAccountStatus {
+    UNBLOCKED = 'UNBLOCKED',
+    BLOCKED = 'BLOCKED',
+    UNKNOWN = 'UNKNOWN',
+}
+
+export function string_to_platform_account_status(value: string): PlatformAccountStatus {
+    switch (value.toLowerCase()) {
+        case 'unblocked':
+            return PlatformAccountStatus.UNBLOCKED
+        case 'blocked':
+            return PlatformAccountStatus.BLOCKED
+        case 'unknown':
+            return PlatformAccountStatus.UNKNOWN
+        default:
+            throw new Error(`Unknown PlatformAccountStatus: ${value}`)
+    }
+}
+
+export interface ISocialNetworkAuth {
     name: string
     jwt: string | undefined
 
@@ -42,6 +57,8 @@ export interface iSocialNetworkAuth {
 
     // Twitter also needs a cookie value for auth
     cookie_auth: string | undefined
+
+    expires: number | undefined
 }
 
 

@@ -2,7 +2,7 @@
   {
     "url": "https://byomod.org/lists/dathes.yaml",
     "name": "Steven's block list",
-    "last_updated": "2024-10-31T00:02:51.141948+00:00",
+    "last_updated": "2024-11-04T16:47:41.612324+00:00",
     "categories": [
       "alt-right",
       "bot",
@@ -24,21 +24,21 @@
       "ufo"
     ],
     "counters": {
-      "facebook": 116,
-      "instagram": 103,
-      "twitter": 1183,
-      "youtube": 308,
-      "tiktok": 15,
-      "truthsocial": 191,
-      "rumble": 70,
+      "facebook": 118,
+      "instagram": 105,
+      "twitter": 1260,
+      "youtube": 312,
+      "tiktok": 17,
+      "truthsocial": 192,
+      "rumble": 74,
       "odysee": 1,
       "gab": 4,
-      "telegram": 41,
+      "telegram": 44,
       "bitchute": 27,
       "bluesky": 7,
       "mastodon": 1,
       "threads": 3,
-      "twitch": 9,
+      "twitch": 10,
       "reddit": 2,
       "discord": 2,
       "parler": 0
@@ -47,7 +47,7 @@
   {
     "url": "https://byomod.org/lists/test-6.yaml",
     "name": "test-list-6",
-    "last_updated": "2024-10-31T00:02:51.173784+00:00",
+    "last_updated": "2024-11-04T16:47:41.646064+00:00",
     "categories": [
       "alt-right",
       "disinformation",

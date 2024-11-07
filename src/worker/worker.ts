@@ -9,77 +9,158 @@
 
 import browser from 'webextension-polyfill';
 
-import SecretStore from '../lib/secret_store/secret_store'
-import HandleStore from '../lib/handle_store/handle_store'
-import grab_auth_tokens, { get_twitter_auth } from './auth_tokens'
+import { SocialNetwork } from '../lib/social_network';
 
-import { SocialAccountStoredStatus } from '../lib/datatypes';
+import { PlatformAccountStatus, SocialAccountStoredStatus } from '../lib/datatypes';
+import {SOCIAL_NETWORKS_BY_DOMAIN} from '../lib/constants'
+
+import TwitterAuth from '../lib/auth/auth_tokens'
+
+import SecretStore from '../lib/secret_store/secret_store'
 import StoredSocialAccount from '../lib/handle_store/stored_social_account';
+import HandleStore from '../lib/handle_store/handle_store'
+
 import TwitterAccount from '../lib/X/twitter_account';
 
-import type {iSocialNetworkAuth} from '../lib/datatypes'
+import type {ISocialNetworkAuth} from '../lib/datatypes'
 
 
 let SECRET_STORE = new SecretStore()
 let HANDLE_STORE = new HandleStore()
+let TWITTER_ACCOUNT = new TwitterAccount()
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 function launch_grab_tokens(details: browser.WebRequest.OnBeforeSendHeadersDetailsType): browser.WebRequest.BlockingResponseOrPromise | undefined  {
+    console.log('Grabbing tokens')
+    let url: URL = new URL(details.url)
+    let fqdn: string = url.hostname.toLowerCase()
 
-    console.log('Launching grab tokens')
-    grab_auth_tokens(SECRET_STORE, details)
+    let social_network: SocialNetwork | undefined = get_social_network(fqdn)
+    if (social_network === undefined) {
+        console.log('No social network for domain: ' + fqdn)
+        return
+    }
+
+    if (social_network.name.toLowerCase() != SOCIAL_NETWORKS_BY_DOMAIN.get('twitter')?.name) {
+        console.log(
+            'We do not yet support auth tokens for social network:',
+            social_network.name
+        )
+        return
+    }
+
+    let auth: TwitterAuth = TWITTER_ACCOUNT.auth
+
+    let now = Math.floor(Date.now() / 1000)
+    console.log(`Now ${now}, Auth expires: ${auth.expires}`)
+
+    if (! auth.is_expired()) {
+        console.log('Found unexpired Twitter auth tokens')
+        return
+    }
+
+    let headers: browser.WebRequest.HttpHeaders | undefined = details.requestHeaders
+    if (headers == undefined) {
+        return
+    }
+
+    auth.grab_auth_tokens(details.requestHeaders!)
+
+    SECRET_STORE.upsert(auth, 'twitter')
     return {cancel: false} as browser.WebRequest.BlockingResponse
 }
 
+function get_social_network(fqdn: string): SocialNetwork | undefined {
+    let fqdn_parts: string[] = fqdn.split('.')
+    if (fqdn_parts.length < 2) {
+        return undefined
+    }
+    let tld: string = fqdn_parts[fqdn_parts.length - 1]
+    let domain: string = fqdn_parts[fqdn_parts.length - 2]
+
+    let social_domain: string = `${domain}.${tld}`
+    return SOCIAL_NETWORKS_BY_DOMAIN.get(social_domain)
+}
+
 async function run_social_accounts() {
-    let wait_time: number = 1 * 1000    // 1 second
     let between_runs_wait_time: number = 60 * 1000  // 1 minute
+    let twitter_auth: TwitterAuth = await TwitterAuth.from_storage(SECRET_STORE)
+    TWITTER_ACCOUNT.auth = twitter_auth
+
     while (true) {
-        console.log('Blocking social accounts run')
-        let accounts: StoredSocialAccount[] = await HANDLE_STORE.get_by_status(SocialAccountStoredStatus.TO_BLOCK)
-        if (accounts.length === 0) {
-            console.log(`No accounts to block, sleeping ${Math.floor(between_runs_wait_time / 1000)} seconds`)
-            await delay(between_runs_wait_time)
-            continue
-        }
-        console.log(`Accounts to block: ${accounts.length}`)
-        let twitter_auth: iSocialNetworkAuth = await get_twitter_auth(SECRET_STORE)
         if (twitter_auth.jwt === undefined || twitter_auth.csrf_token === undefined) {
-            console.log(`No twitter auth tokens found, sleeping ${Math.floor(between_runs_wait_time / 1000)} seconds`)
-            await delay(between_runs_wait_time)
-            continue
+            console.log('No twitter auth tokens found')
+            return
         }
-        for (let account of accounts) {
-            try {
-                await HANDLE_STORE.update_status(account.handle, account.platform, SocialAccountStoredStatus.ATTEMPTED_BLOCK)
-                let result: boolean = await TwitterAccount.block_handle(account.handle, twitter_auth)
-                if (result) {
-                    await HANDLE_STORE.update_status(account.handle, account.platform, SocialAccountStoredStatus.BLOCKED)
-                    console.log(`Successfully blocked ${account.handle} on Twitter`)
-                    if (wait_time >= 2000) {
-                        wait_time = Math.floor(wait_time / 2)
-                    }
-                } else {
-                    console.log(`Blocking handle failed: ${account.handle} on Twitter`)
-                    if (wait_time < 300 * 1000) {
-                        wait_time *= 2
-                    }
-                    }
-            } catch (exc) {
-                console.log(`Exception blocking handle ${account.handle}on Twitter: ${exc}`)
-                if (wait_time < 300 * 1000) {
-                    wait_time *= 2
-                }
-            }
-            console.log(`Sleeping ${Math.floor(wait_time / 1000)} seconds before next block`)
-            await delay(wait_time)
-        }
+
+        // await TWITTER_ACCOUNT.get_blocked_handles()
+        await _reconcile_social_accounts()
+        console.log('Sleeping between social accounts run')
+        await delay(between_runs_wait_time)
+
     }
 }
 
+async function _reconcile_social_accounts() {
+    console.log('Blocking social accounts run')
+
+    let accounts: StoredSocialAccount[] = await HANDLE_STORE.get_by_status(
+        SocialAccountStoredStatus.TO_BLOCK
+    )
+    if (accounts.length === 0) {
+        console.log('No accounts to block')
+        return
+    }
+    console.log(`Accounts to block: ${accounts.length}`)
+
+    let wait_time: number = 1 * 1000    // 1 second
+    for (let account of accounts) {
+        wait_time = await _reconcile_social_account(account, wait_time)
+        console.log(`Sleeping ${Math.floor(wait_time / 1000)} seconds before next block`)
+        await delay(wait_time)
+    }
+}
+
+async function _reconcile_social_account(
+    account: StoredSocialAccount,
+    wait_time: number): Promise<number> {
+
+    try {
+        await HANDLE_STORE.update_status(
+            account.handle, account.platform,
+            SocialAccountStoredStatus.ATTEMPTED_BLOCK,
+            PlatformAccountStatus.UNKNOWN
+        )
+        let result: boolean = await TWITTER_ACCOUNT.block_handle(account.handle)
+        if (result) {
+            await HANDLE_STORE.update_status(
+                account.handle, account.platform,
+                SocialAccountStoredStatus.BLOCKED,
+                PlatformAccountStatus.UNKNOWN
+            )
+            console.log(`Successfully blocked ${account.handle} on Twitter`)
+            if (wait_time >= 2000) {
+                wait_time = Math.floor(wait_time / 2)
+            }
+        } else {
+            console.log(`Blocking handle failed: ${account.handle} on Twitter`)
+            if (wait_time < 300 * 1000) {
+                wait_time *= 2
+            }
+        }
+    } catch (exc) {
+        console.log(`Exception blocking handle ${account.handle}on Twitter: ${exc}`)
+        if (wait_time < 300 * 1000) {
+            wait_time *= 2
+        }
+    }
+    return wait_time
+}
 
 console.log('Worker loaded')
+
+
 run_social_accounts()
 
 // Grad authentication tokens

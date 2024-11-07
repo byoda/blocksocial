@@ -213,7 +213,7 @@ class SocialAccount:
             status=account_data.get('status')
         )
 
-        for stats_data in account_data.get('stats' or [], []):
+        for stats_data in account_data.get('stats', []) or []:
             stats: AccountStat = AccountStat.from_dict(stats_data)
             account.account_stats.append(stats)
 
@@ -355,7 +355,7 @@ class ModerationEntry:
         return 'unknown'
 
     @staticmethod
-    def from_dict(entry_data: dict) -> None:
+    def from_dict(entry_data: dict) -> Self:
         entry: ModerationEntry = ModerationEntry(
             first_name=entry_data.get('first_name'),
             last_name=entry_data.get('last_name'),
@@ -439,7 +439,7 @@ class ModerationEntry:
             for account in accounts:
                 if account.is_primary:
                     return account
-            return accounts[0]
+            return list(accounts)[0]
 
     def get_accounts(self, platform: str | SocialPlatform
                      ) -> set[SocialAccount]:
@@ -474,6 +474,7 @@ class UserEntry:
             'url': self.url
         }
 
+    @staticmethod
     def from_dict(user_data: dict) -> Self:
         return UserEntry(
             name=user_data.get('name'),
@@ -516,12 +517,12 @@ class ModerationList:
 
     def add_block(self, entry: ModerationEntry) -> None:
         # name: str = entry.get_name()
-        repr: str = entry.__repr__()
+        block_repr: str = entry.__repr__()
 
-        if repr not in self.blocks:
-            self.blocks[repr] = entry
+        if block_repr not in self.blocks:
+            self.blocks[block_repr] = entry
         else:
-            existing_entry: ModerationEntry = self.blocks[repr]
+            existing_entry: ModerationEntry = self.blocks[block_repr]
             existing_entry.merge(entry)
 
         self.last_updated = datetime.now(tz=UTC)
@@ -531,24 +532,32 @@ class ModerationList:
         self.last_updated = datetime.now(tz=UTC)
 
     def as_dict(self) -> dict[str, list[dict[str, str | dict]]]:
-        data: OrderedDict[str, dict[str, any]] = {
-            'meta': {
-                'last_updated': self.last_updated,
-                'list_name': self.list_name,
-                'author_name': self.author_name,
-                'author_email': self.author_email,
-                'author_url': self.author_url,
-                'download_url': self.download_url,
-                'disclaimer': self.disclaimer,
-                'categories': self.categories,
-            },
-            'block_list': [
-                entry.as_dict() for entry in self.blocks.values()
-            ],
-            'trust_list': [
-                entry.as_dict() for entry in self.trusts
-            ],
-        }
+        data: OrderedDict[str, dict[str, any]] = OrderedDict(
+            [
+                (
+                    'meta',
+                    {
+                        'last_updated': self.last_updated,
+                        'list_name': self.list_name,
+                        'author_name': self.author_name,
+                        'author_email': self.author_email,
+                        'author_url': self.author_url,
+                        'download_url': self.download_url,
+                        'disclaimer': self.disclaimer,
+                        'categories': self.categories,
+                    },
+                ),
+                (
+                    'block_list',
+                    [entry.as_dict() for entry in self.blocks.values()],
+
+                ),
+                (
+                    'trust_list',
+                    [entry.as_dict() for entry in self.trusts],
+                )
+            ]
+        )
         return data
 
     @staticmethod
@@ -756,7 +765,7 @@ class ModerationList:
         if 'businesstype' in column_map:
             business_type = row_columns[next(iter(column_map['businesstype']))]
 
-        languages: str | set[str] = ['en']
+        languages: str | set[str] = set(['en'])
         if 'languages' in row_columns:
             languages = row_columns[next(iter(column_map['languages']))]
             if isinstance(languages, str):

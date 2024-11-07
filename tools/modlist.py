@@ -21,7 +21,7 @@ _LOGGER: Logger = getLogger(__name__)
 FILE_DIR: str = '/mnt/c/Users/steve/OneDrive/BYODA/Engineering/moderation'
 TEST_EXCEL: str = f'{FILE_DIR}/content-moderation.xlsx'
 TEST_CSV: str = f'{FILE_DIR}/content-moderation - CSV.csv'
-TEST_YAML = 'tests/collateral/content-moderation.yaml'
+TEST_YAML = 'tests/collateral/dathes.yaml'
 
 
 if __name__ == '__main__':
@@ -45,6 +45,10 @@ if __name__ == '__main__':
         mod = ModerationList(
             list_name='TBD',
             author_name='TBD',
+            author_email='TBD',
+            author_url='TBD',
+            download_url='TBD',
+            categories=[],
         )
 
     extension: str = os.path.splitext(args.workbook)[-1]

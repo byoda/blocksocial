@@ -5,7 +5,7 @@
 import browser from 'webextension-polyfill';
 
 
-import type {iSocialNetworkAuth} from './datatypes'
+import type {ISocialNetworkAuth} from './datatypes'
 
 import HandleStore from '../lib/handle_store/handle_store'
 
@@ -46,7 +46,7 @@ export default class Message {
 //                     let message: iMessage<any> = JSON.parse(request) as iMessage<any>
 //                     if (message.type === 'auth_tokens') {
 //                         console.log('Received auth_tokens message')
-//                         save_auth_tokens(message as iMessage<iSocialNetworkAuth>)
+//                         save_auth_tokens(message as iMessage<ISocialNetworkAuth>)
 //                     } else if (message.type === 'social_accounts_push') {
 //                     }
 //                 } catch (e) {
@@ -63,13 +63,13 @@ export default class Message {
 // }
 
 
-// function save_auth_tokens(message: iMessage<iSocialNetworkAuth>) {
+// function save_auth_tokens(message: iMessage<ISocialNetworkAuth>) {
 //     console.log(`Received auth_tokens: ${message.source}:${message.type}`)
-//     let payload: iSocialNetworkAuth
+//     let payload: ISocialNetworkAuth
 //     if (typeof message.data === 'string') {
-//         payload = JSON.parse(message.data) as iSocialNetworkAuth
+//         payload = JSON.parse(message.data) as ISocialNetworkAuth
 //     } else {
-//         payload = message.data as iSocialNetworkAuth
+//         payload = message.data as ISocialNetworkAuth
 //     }
 //     if (payload.name != 'Twitter') {
 //         console.log(
@@ -86,13 +86,13 @@ export default class Message {
 
 // }
 
-// export async function load_auth_tokens(): Promise<iSocialNetworkAuth | undefined> {
+// export async function load_auth_tokens(): Promise<ISocialNetworkAuth | undefined> {
 //     let data_text: string | null = localStorage.getItem('auth_tokens_twitter')
 //     if (data_text == null) {
 //         console.log('No auth tokens found!')
 //         return undefined
 //     }
-//     let data = JSON.parse(data_text) as iSocialNetworkAuth
+//     let data = JSON.parse(data_text) as ISocialNetworkAuth
 //     return data
 // }
 }

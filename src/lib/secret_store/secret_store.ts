@@ -4,8 +4,9 @@ import Dexie, { type Table } from 'dexie'
 
 import StoredSecret from './stored_secrets'
 
-import type { iSocialNetworkAuth } from '../datatypes'
-import { AuthTokenType, string_to_auth_token_type } from '../datatypes'
+import type SocialAuth from '../auth/auth_tokens'
+
+import { AuthTokenType, string_to_auth_token_type } from '../auth/auth_tokens'
 
 export default class SecretStore extends Dexie {
     secrets!: Table<StoredSecret, 'key_id'>
@@ -14,7 +15,7 @@ export default class SecretStore extends Dexie {
         super('SecretsDb')
         this.version(1).stores(
             {
-                secrets: 'key_id,platform,auth_token_type,value'
+                secrets: 'key_id,platform,auth_token_type, value, expires'
             }
         )
         this.secrets.mapToClass(StoredSecret)
@@ -24,7 +25,7 @@ export default class SecretStore extends Dexie {
         return `${platform}_${auth_token_type.valueOf()}`
     }
 
-    async upsert(auth: iSocialNetworkAuth, platform: string): Promise<void> {
+    async upsert(auth: SocialAuth, platform: string): Promise<void> {
         let value: string | undefined = undefined
         for (let auth_token_type_str in AuthTokenType) {
             const auth_token_type: AuthTokenType = string_to_auth_token_type(
@@ -32,7 +33,7 @@ export default class SecretStore extends Dexie {
             )
             if (auth_token_type.toLowerCase() == AuthTokenType.JWT) {
                 value = auth.jwt
-            } else if (auth_token_type.toLowerCase() == AuthTokenType.CSRF) {
+            } else if (auth_token_type.toLowerCase() == AuthTokenType.CSRF_TOKEN) {
                 value = auth.csrf_token
             } else if (auth_token_type.toLowerCase() == AuthTokenType.GRAPHQL_TOKEN) {
                 value = auth.graphql_token
@@ -50,15 +51,13 @@ export default class SecretStore extends Dexie {
                 key_id: key_id,
                 platform: platform,
                 auth_token_type: auth_token_type,
-                value: value
+                value: value,
+                expires: auth.expires
             } as StoredSecret
 
             let new_key_id = await this.secrets.put(data)
             console.log(`Upserted: ${key_id}: ${value}, returned key_id ${new_key_id}`)
-
-            // let new_data = await this.secrets.get(new_key_id)
-            // console.log('Validate SECRET_STORE works: ', new_data)
-            }
+        }
     }
 
     async get_by_platform(platform: string): Promise<StoredSecret[]> {

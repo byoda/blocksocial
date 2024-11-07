@@ -100,7 +100,6 @@ export default class ByoMod {
     }
 
     async add_list(list_url: string) {
-        console.log(`Adding list ${list_url}`)
         if (!list_url) {
             console.info('Not adding list for empty URL')
             return
@@ -132,7 +131,6 @@ export default class ByoMod {
         this.subscribed_lists = this.subscribed_lists     // noqa: S1656
         await this.save_subscribed_lists()
         console.log(`List added: ${list_url}`)
-
     }
 
     async load_handles() {

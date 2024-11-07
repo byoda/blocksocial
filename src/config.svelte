@@ -24,29 +24,29 @@
         return lists.values().toArray()
     }
 
-    function subscribe(url: string) {
-        return async() => {
-            console.log(`Subscribing to ${url}`)
-            await byomod.add_list(url)
-            // Svelte trickery for updating lists:
-            // https://learn.svelte.dev/tutorial/updating-arrays-and-objects
-            byomod.subscribed_lists.lists = byomod.subscribed_lists.lists
+    const subscribe = async() => {
+        let url = 'https://byomod.org/lists/test-6.yaml'
+        console.log(`Subscribing to ${url}`)
+        await byomod.add_list(url)
+        // Svelte trickery for updating lists:
+        // https://learn.svelte.dev/tutorial/updating-arrays-and-objects
+        byomod.subscribed_lists = byomod.subscribed_lists
 
-            for (let list of byomod.list_of_lists.values()) {
+        for (let list of byomod.list_of_lists.values()) {
                 if (list.url == url) {
                     list.subscribed = true
                     break
                 }
             }
-        }
     }
+
     function unsubscribe(url: string) {
         console.log(`Unsubscribing from ${url}`)
         return async() => {
             await byomod.add_list(url)
             // Svelte trickery for updating lists:
             // https://learn.svelte.dev/tutorial/updating-arrays-and-objects
-            byomod.subscribed_lists.lists = byomod.subscribed_lists.lists
+            byomod.subscribed_lists = byomod.subscribed_lists
             for (let list of byomod.list_of_lists.values()) {
                 if (list.url == url) {
                     list.subscribed = false
