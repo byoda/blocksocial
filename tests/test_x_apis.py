@@ -16,6 +16,7 @@ RX_QUERY_ID: re.Pattern = re.compile(
     re.IGNORECASE | re.MULTILINE
 )
 
+EXTENSION_URL: str = 'chrome-extension://eonknbiiibbeipnbhlgedahcbaeomnmj'
 CSRF_TOKEN: str = '7ed1c229b860295c74ceed47675ce135eac27ef4281fa7b835350ac70c13cea7f052cefd9efcf029b123d5be0f71db05d261d93b9e848ff9e966dc4757bb55653b63d3f6dbce3489a78649edfb55b99f'        # noqa: E501
 AUTH_TOKEN: str = 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA'                                                         # noqa: E501
 COOKIE_AUTH_TOKEN: str = 'aa7872d4aee299693d2444b52685268c681d6890'                                                                                                                         # noqa: E501
@@ -35,7 +36,7 @@ def main() -> None:
                     f'operation type: {match.group(3)}'
                 )
 
-      cookies: dict[str, str] = {
+    cookies: dict[str, str] = {
         'ct0': CSRF_TOKEN,
         'auth_token': COOKIE_AUTH_TOKEN,
     }
@@ -44,6 +45,7 @@ def main() -> None:
         'authorization': AUTH_TOKEN,
         'cookie': '; '.join(f'{k}={v}' for k, v in cookies.items()),
         'x-csrf-token': cookies.get('ct0', ''),
+        'origin': EXTENSION_URL
     }
 
     endpoint: str = 'https://api.x.com/1.1/account/settings.json'

@@ -79,7 +79,9 @@ export default class ByoList {
         let list_data: IBlockList = this.storage.get(key) as IBlockList;
 
             if (list_data === undefined) {
-                console.log(`No data in storage for list ${this.download_url.href}`)
+                console.log(
+                    `No data in storage with key ${key} for list ${this.download_url.href}`
+                )
             }
 
             return list_data
@@ -93,7 +95,7 @@ export default class ByoList {
             list = this.list;
         }
         let key: string = this.get_keyname(this.download_url.href);
-        console.log(`Saving list to: ${key}`);
+        console.log(`Saving list under key: ${key}`);
 
         this.storage.set(key, list);
     }

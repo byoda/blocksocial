@@ -4,9 +4,8 @@
 
     import ByoMod from './lib/byomod'
     import HandleStore from './lib/handle_store/handle_store'
-    import type {iListOfLists, iListStat} from './lib/datatypes'
+    import type {iListStat} from './lib/datatypes'
 
-    import {SOCIAL_NETWORKS_BY_PLATFORM} from './lib/constants'
     import {LIST_OF_LISTS_URL} from './lib/constants'
 
     let HANDLE_STORE = new HandleStore()
@@ -57,7 +56,7 @@
     }
 </script>
 <h2>Available Lists</h2>
-<div class='container mx-auto px-0 '>
+<div class='container mx-auto px-0 text-sm'>
 {#await get_lists()}
     <p>Loading unsubscribed lists...</p>
 {:then all_lists}
@@ -91,7 +90,9 @@
                             <button type="button" on:click={() => unsubscribe(row.url)} class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-gray-50 text-grey-800 hover:text-grey-800 focus:outline-none focus:text-blue-800 disabled:opacity-50 disabled:pointer-events-none dark:text-blue-500 dark:hover:text-blue-400 dark:focus:text-blue-400">Unsubscribe</button>
 {/if}
                         </td>
-                        <td>{row.categories.toString()}</td>
+                        <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 20ch;">
+                            {row.categories.toString()}
+                        </td>
                     </tr>
                 {/each}
             </tbody>
