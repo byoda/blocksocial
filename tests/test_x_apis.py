@@ -45,7 +45,6 @@ def main() -> None:
         'authorization': AUTH_TOKEN,
         'cookie': '; '.join(f'{k}={v}' for k, v in cookies.items()),
         'x-csrf-token': cookies.get('ct0', ''),
-        'origin': EXTENSION_URL
     }
 
     endpoint: str = 'https://api.x.com/1.1/account/settings.json'

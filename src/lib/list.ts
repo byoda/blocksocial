@@ -2,14 +2,14 @@
 
 import * as yaml from 'js-yaml';
 
-import type {IBlockList, iBlockEntry, iSocialAccount} from './datatypes';
+import {PlatformAccountStatus, SocialAccountStoredStatus, type IBlockList, type iBlockEntry, type iSocialAccount} from './datatypes';
 
 import HandleStore from '../lib/handle_store/handle_store'
 
 import ByoStorage from './storage';
 import BlockEntry from './blockentry';
 
-export default class ByoList {
+export default class BlockList {
     /*
     A list that user may or may not be subscribed to.
     */
@@ -118,13 +118,25 @@ export default class ByoList {
     }
 
 
-    async store_social_accounts(handle_store: HandleStore, platform: string) {
+    async queue_block_social_accounts(handle_store: HandleStore, platform: string) {
+        console.log(`Queueing accounts to block for platform: ${platform}`)
         let accounts: iSocialAccount[] = this.get_accounts_by_platform(platform)
         for (let account of accounts) {
-            handle_store.add(account.handle, platform)
+            handle_store.add(account.handle, platform, SocialAccountStoredStatus.TO_BLOCK)
         }
     }
 
+    async queue_unblock_social_accounts(handle_store: HandleStore, platform: string) {
+        console.log(`Queueing accounts to unblock for platform: ${platform}`)
+        let accounts: iSocialAccount[] = this.get_accounts_by_platform(platform)
+        for (let account of accounts) {
+            handle_store.update_status(
+                account.handle, platform,
+                SocialAccountStoredStatus.TO_UNBLOCK,
+                PlatformAccountStatus.UNKNOWN
+            )
+        }
+    }
     private async download(): Promise<IBlockList> {
         /**
          * Download the list from the URL.

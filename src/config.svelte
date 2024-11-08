@@ -12,8 +12,6 @@
 
     console.log('Config page reporting for duty')
 
-    let list_url: string = ''
-
     let byomod = new ByoMod(HANDLE_STORE)
     let table: TableHandler
 
@@ -23,8 +21,8 @@
         return lists.values().toArray()
     }
 
-    const subscribe = async() => {
-        let url = 'https://byomod.org/lists/test-6.yaml'
+    const subscribe = async(url: string) => {
+        // let url = 'https://byomod.org/lists/test-6.yaml'
         console.log(`Subscribing to ${url}`)
         await byomod.add_list(url)
         // Svelte trickery for updating lists:
@@ -39,18 +37,16 @@
             }
     }
 
-    function unsubscribe(url: string) {
+    const unsubscribe = async(url: string) => {
         console.log(`Unsubscribing from ${url}`)
-        return async() => {
-            await byomod.add_list(url)
-            // Svelte trickery for updating lists:
-            // https://learn.svelte.dev/tutorial/updating-arrays-and-objects
-            byomod.subscribed_lists = byomod.subscribed_lists
-            for (let list of byomod.list_of_lists.values()) {
-                if (list.url == url) {
-                    list.subscribed = false
-                    break
-                }
+        await byomod.remove_list(url)
+        // Svelte trickery for updating lists:
+        // https://learn.svelte.dev/tutorial/updating-arrays-and-objects
+        byomod.subscribed_lists = byomod.subscribed_lists
+        for (let list of byomod.list_of_lists.values()) {
+            if (list.url == url) {
+                list.subscribed = false
+                break
             }
         }
     }

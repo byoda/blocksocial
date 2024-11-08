@@ -44,8 +44,9 @@ export default class HandleStore extends Dexie {
 
     async add(handle: string, platform: string, block_status: SocialAccountStoredStatus = SocialAccountStoredStatus.TO_BLOCK, platform_status: PlatformAccountStatus = PlatformAccountStatus.UNKNOWN): Promise<void> {
         let key: string = this.get_key(handle, platform)
-        if (await this.get(handle, platform) !== undefined) {
-            console.log(`Handle already exists: ${key}`)
+        let existing = await this.get(handle, platform)
+        if (existing !== undefined) {
+            this.update_status(handle, platform, block_status, existing.platform_status)
             return
         }
         try {
@@ -78,8 +79,11 @@ export default class HandleStore extends Dexie {
         )
     }
 
-    async get_by_status(status: string): Promise<StoredSocialAccount[]> {
-        return await this.handles.where('block_status').equals(status).toArray()
+    async get_by_status(statuses: SocialAccountStoredStatus[]): Promise<StoredSocialAccount[]> {
+        let statuses_strings: string[] = statuses.map(
+            (status => status.toString())
+        )
+        return await this.handles.where('block_status').anyOfIgnoreCase(statuses_strings).toArray()
     }
 
     async get_by_platform(platform: string): Promise<StoredSocialAccount[]> {

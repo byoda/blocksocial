@@ -1,7 +1,7 @@
 <script lang='ts'>
     import {TableHandler, Datatable, ThSort, ThFilter } from '@vincjo/datatables';
 
-    import ByoList from './lib/list'
+    import BlockList from './lib/list'
     import BlockEntry from './lib/blockentry'
 
     let url: string = ''
@@ -12,15 +12,15 @@
         window.location.href = '/index.html'
     }
     console.log('ListView reporting for duty')
-    let byo_list: ByoList
+    let block_list: BlockList
     let block_entry: BlockEntry
     let table: TableHandler
     const get_list = async() => {
         console.log(`Downloading list ${url}`)
-        byo_list = new ByoList(url)
-        await byo_list.initialize()
-        table = new TableHandler(byo_list.block_entries, {rowsPerPage: 30})
-        return byo_list.block_entries
+        block_list = new BlockList(url)
+        await block_list.initialize()
+        table = new TableHandler(block_list.block_entries, {rowsPerPage: 30})
+        return block_list.block_entries
     }
 </script>
 <h1>List Metadata</h1>
@@ -33,31 +33,31 @@
         <thead>
             <tr>
                 <th>List</th>
-                <td>{byo_list.list.meta.list_name}</td>
+                <td>{block_list.list.meta.list_name}</td>
             </tr>
             <tr>
                 <th>Last updated</th>
-                <td>{byo_list.list.meta.last_updated}</td>
+                <td>{block_list.list.meta.last_updated}</td>
             </tr>
             <tr>
                 <th>Entries</th>
-                <td>{byo_list.block_entries.length}</td>
+                <td>{block_list.block_entries.length}</td>
             </tr>
             <tr>
                 <th>Author</th>
-                <td>{byo_list.list.meta.author_name}</td>
+                <td>{block_list.list.meta.author_name}</td>
             </tr>
             <tr>
                 <th>Email</th>
-                <td>{byo_list.list.meta.author_email}</td>
+                <td>{block_list.list.meta.author_email}</td>
             </tr>
             <tr>
                 <th>Author URL</th>
-                <td>{byo_list.list.meta.author_url}</td>
+                <td>{block_list.list.meta.author_url}</td>
             </tr>
             <tr>
                 <th>List URL</th>
-                <td>{byo_list.list.meta.download_url}</td>
+                <td>{block_list.list.meta.download_url}</td>
             </tr>
             <tr>
                 <th>Categories</th>
@@ -70,7 +70,7 @@
 <h1>Categories used in the list</h1>
     <table>
         <thead>
-    {#each byo_list.categories as category}
+    {#each block_list.categories as category}
             <tr>
                 <th >{category[0]}</th>
                 <td>{category[1]}</td>

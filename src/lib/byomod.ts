@@ -2,7 +2,7 @@
 
 import type {iListStat} from './datatypes'
 
-import ByoList from './list'
+import BlockList from './list'
 import ByoStorage from './storage'
 import HandleStore from '../lib/handle_store/handle_store'
 
@@ -16,7 +16,7 @@ export default class ByoMod {
     storage: ByoStorage
     handle_store: HandleStore
     subscribed_lists: Set<string>
-    // lists: Map<string, ByoList> = new Map<string, ByoList>
+    // lists: Map<string, BlockList> = new Map<string, BlockList>
     list_of_lists: Map<string, iListStat> = new Map<string, iListStat>()
 
     constructor(handle_store: HandleStore) {
@@ -83,9 +83,9 @@ export default class ByoMod {
     }
 
     async load_lists() {
-        let subscribed_lists: Map<string, ByoList> = new Map<string, ByoList>()
+        let subscribed_lists: Map<string, BlockList> = new Map<string, BlockList>()
         for (let mod_list of this.subscribed_lists.values()) {
-            let byo_list: ByoList = new ByoList(mod_list)
+            let byo_list: BlockList = new BlockList(mod_list)
             let result: boolean = await byo_list.initialize()
             if (result) {
                 console.log('Loading list: ', mod_list)
@@ -110,7 +110,7 @@ export default class ByoMod {
             return
         }
         try {
-            let new_list: ByoList = new ByoList(list_url)
+            let new_list: BlockList = new BlockList(list_url)
             await new_list.initialize()
             console.log(`List has ${new_list.block_entries.length} entries`)
             for (let [platform, net] of SOCIAL_NETWORKS_BY_PLATFORM) {
@@ -121,18 +121,50 @@ export default class ByoMod {
                     console.log(`No block list for platform: ${platform}`)
                     continue
                 }
-                await new_list.store_social_accounts(this.handle_store, platform)
+                await new_list.queue_block_social_accounts(this.handle_store, platform)
             }
         } catch (e) {
             console.error('Invalid URL: ', list_url, e)
             return
         }
         this.subscribed_lists.add(list_url)
-        this.subscribed_lists = this.subscribed_lists     // noqa: S1656
         await this.save_subscribed_lists()
         console.log(`List added: ${list_url}`)
     }
 
+    async remove_list(list_url: string) {
+        console.log('Removing list: ', list_url)
+        if (!list_url) {
+            console.info('Not remove list for empty URL')
+            return
+        }
+
+        if (! this.subscribed_lists.has(list_url)) {
+            console.info(`Not subscribed to list: ${list_url}`)
+            return
+        }
+        try {
+            let new_list: BlockList = new BlockList(list_url)
+            await new_list.initialize()
+            console.log(`List has ${new_list.block_entries.length} entries`)
+            for (let [platform, net] of SOCIAL_NETWORKS_BY_PLATFORM) {
+                if (net === undefined || net.supported === false) {
+                    continue
+                }
+                if (new_list.block_entries === undefined || new_list.block_entries.length === 0) {
+                    console.log(`No block list for platform: ${platform}`)
+                    continue
+                }
+                await new_list.queue_unblock_social_accounts(this.handle_store, platform)
+            }
+        } catch (e) {
+            console.error('Invalid URL: ', list_url, e)
+            return
+        }
+        this.subscribed_lists.delete(list_url)
+        await this.save_subscribed_lists()
+        console.log(`List removed: ${list_url}`)
+    }
     async load_handles() {
         let found_net_with_blocks: boolean = false
         for (let [platform, net] of SOCIAL_NETWORKS_BY_PLATFORM) {

@@ -21,8 +21,7 @@ import StoredSocialAccount from '../lib/handle_store/stored_social_account';
 import HandleStore from '../lib/handle_store/handle_store'
 
 import TwitterAccount from '../lib/X/twitter_account';
-
-import type {ISocialNetworkAuth} from '../lib/datatypes'
+import ByoStorage from '../lib/storage';
 
 
 let SECRET_STORE = new SecretStore()
@@ -106,7 +105,10 @@ async function _reconcile_social_accounts() {
     console.log('Blocking social accounts run')
 
     let accounts: StoredSocialAccount[] = await HANDLE_STORE.get_by_status(
-        SocialAccountStoredStatus.TO_BLOCK
+        [
+            SocialAccountStoredStatus.TO_BLOCK,
+            SocialAccountStoredStatus.TO_UNBLOCK,
+        ]
     )
     if (accounts.length === 0) {
         console.log('No accounts to block')
@@ -116,46 +118,87 @@ async function _reconcile_social_accounts() {
 
     let wait_time: number = 1 * 1000    // 1 second
     for (let account of accounts) {
-        wait_time = await _reconcile_social_account(account, wait_time)
+        wait_time = await _reconcile_social_account(
+            account, wait_time
+        )
         console.log(`Sleeping ${Math.floor(wait_time / 1000)} seconds before next block`)
         await delay(wait_time)
     }
 }
 
 async function _reconcile_social_account(
-    account: StoredSocialAccount,
-    wait_time: number): Promise<number> {
+        account: StoredSocialAccount,
+        wait_time: number): Promise<number> {
 
     try {
-        await HANDLE_STORE.update_status(
-            account.handle, account.platform,
-            SocialAccountStoredStatus.ATTEMPTED_BLOCK,
-            PlatformAccountStatus.UNKNOWN
+        console.log(
+            `Reconciling account ${account.handle}',
+            'with target status ${account.block_status}`
         )
-        let result: boolean = await TWITTER_ACCOUNT.block_handle(account.handle)
-        if (result) {
-            await HANDLE_STORE.update_status(
-                account.handle, account.platform,
-                SocialAccountStoredStatus.BLOCKED,
-                PlatformAccountStatus.UNKNOWN
-            )
-            console.log(`Successfully blocked ${account.handle} on Twitter`)
-            if (wait_time >= 2000) {
-                wait_time = Math.floor(wait_time / 2)
-            }
+
+        let target_status: SocialAccountStoredStatus = account.block_status
+
+        let result: boolean
+        if (target_status === SocialAccountStoredStatus.TO_BLOCK) {
+            result = await block_social_account(account)
         } else {
-            console.log(`Blocking handle failed: ${account.handle} on Twitter`)
-            if (wait_time < 300 * 1000) {
-                wait_time *= 2
-            }
+            result = await unblock_social_account(account)
+        }
+
+        if (result && wait_time >= 2000) {
+            wait_time = Math.floor(wait_time / 2)
+        } else if (!result && wait_time < 300 * 1000) {
+            wait_time *= 2
         }
     } catch (exc) {
-        console.log(`Exception blocking handle ${account.handle}on Twitter: ${exc}`)
+        console.log(
+            `Exception blocking handle ${account.handle} on Twitter:`, exc
+        )
         if (wait_time < 300 * 1000) {
             wait_time *= 2
         }
     }
     return wait_time
+}
+
+async function block_social_account(account: StoredSocialAccount): Promise<boolean> {
+    await HANDLE_STORE.update_status(
+        account.handle, account.platform,
+        SocialAccountStoredStatus.ATTEMPTED_BLOCK,
+        PlatformAccountStatus.UNKNOWN
+    )
+
+    let result: boolean = await TWITTER_ACCOUNT.block_handle(account.handle)
+
+    if (result) {
+        await HANDLE_STORE.update_status(
+            account.handle, account.platform,
+            SocialAccountStoredStatus.BLOCKED,
+            PlatformAccountStatus.BLOCKED
+        )
+        console.log(`Successfully blocked ${account.handle} on Twitter`)
+    }
+    return result
+}
+
+async function unblock_social_account(account: StoredSocialAccount): Promise<boolean> {
+    await HANDLE_STORE.update_status(
+        account.handle, account.platform,
+        SocialAccountStoredStatus.ATTEMPTED_UNBLOCK,
+        PlatformAccountStatus.UNKNOWN
+    )
+
+    let result: boolean = await TWITTER_ACCOUNT.unblock_handle(account.handle)
+
+    if (result) {
+        await HANDLE_STORE.update_status(
+            account.handle, account.platform,
+            SocialAccountStoredStatus.UNBLOCKED,
+            PlatformAccountStatus.UNBLOCKED
+        )
+        console.log(`Successfully blocked ${account.handle} on Twitter`)
+    }
+    return result
 }
 
 console.log('Worker loaded')
