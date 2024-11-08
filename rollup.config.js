@@ -90,7 +90,7 @@ function buildConfig(inputFileName, outputFileName) {
             commonjs(),
             serve(),
             // nodePolyfills is needed to prevent failure transpiling
-            // ByoList.from_file()
+            //BlockList.from_file()
             nodePolyfills(),
         ],
         watch: {
