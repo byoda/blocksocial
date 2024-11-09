@@ -25,16 +25,16 @@ SCRIPT_URL: str = 'https://abs.twimg.com/responsive-web/client-web/main.df3c674a
 
 
 def main() -> None:
-    resp: httpx.Response = httpx.get(SCRIPT_URL)
-    if resp.status_code == 200:
-        script: str = resp.text
-        for line in script.splitlines():
-            for match in RX_QUERY_ID.finditer(line):
-                print(
-                    f'Query ID: {match.group(1)}, '
-                    f'operation name: {match.group(2)}, '
-                    f'operation type: {match.group(3)}'
-                )
+    # resp: httpx.Response = httpx.get(SCRIPT_URL)
+    # if resp.status_code == 200:
+    #     script: str = resp.text
+    #     for line in script.splitlines():
+    #         for match in RX_QUERY_ID.finditer(line):
+    #             print(
+    #                 f'Query ID: {match.group(1)}, '
+    #                 f'operation name: {match.group(2)}, '
+    #                 f'operation type: {match.group(3)}'
+    #             )
 
     cookies: dict[str, str] = {
         'ct0': CSRF_TOKEN,
@@ -45,17 +45,29 @@ def main() -> None:
         'authorization': AUTH_TOKEN,
         'cookie': '; '.join(f'{k}={v}' for k, v in cookies.items()),
         'x-csrf-token': cookies.get('ct0', ''),
+        'content-type'
     }
 
-    endpoint: str = 'https://api.x.com/1.1/account/settings.json'
-    resp: httpx.Response = httpx.get(
-        endpoint,  headers=headers
-    )
-    if resp.status_code == 200:
-        data = resp.json()
-        print(json.dumps(data, indent=2))
-    else:
-        print('Failure!', resp.text)
+    # endpoint: str = 'https://api.x.com/1.1/account/settings.json'
+    # resp: httpx.Response = httpx.get(
+    #     endpoint,  headers=headers
+    # )
+    # if resp.status_code == 200:
+    #     data = resp.json()
+    #     print(json.dumps(data, indent=2))
+    # else:
+    #     print('Failure!', resp.text)
+
+    # endpoint: str = 'https://api.x.com/1.1/users/lookup.json?screen_name=joni_askola'
+    # resp: httpx.Response = httpx.get(
+    #     endpoint,  headers=headers
+    # )
+    # if resp.status_code == 200:
+    #     print(resp.text)
+    #     data = resp.json()
+    #     print(json.dumps(data, indent=2))
+    # else:
+    #     print('Failure!', resp.text)
 
     endpoint: str = 'https://api.x.com/1.1/blocks/list.json'
     cursor: int = -1
@@ -72,6 +84,8 @@ def main() -> None:
                     f'Received {len(data.get('users', []))}, '
                     f'cursor is now {cursor}'
                 )
+                for user in data.get('users', []):
+                    print(user.get('screen_name'))
                 if not cursor:
                     break
 

@@ -6,6 +6,7 @@ import ByoStorage from '../storage'
 const block_url: string = 'https://x.com/i/api/1.1/blocks/create.json'
 const unblock_url: string = 'https://api.x.com/1.1/blocks/destroy.json'
 const list_blocks_url: string = 'https://api.x.com/1.1/blocks/list.json'
+const user_id_lookup_url: string = 'https://api.x.com/1.1/users/lookup.json'
 
 export interface ITwitterPaginatedResponse<T> {
     data: T[]
@@ -70,6 +71,7 @@ export default class TwitterAccount {
             'authorization': this.auth.jwt!,
             'X-Csrf-Token': this.auth.csrf_token!,
             'Cookie': cookie_header,
+            'Content-Type': 'application/x-www-form-urlencoded',
         }
         return headers
     }
@@ -78,7 +80,7 @@ export default class TwitterAccount {
         let headers: HeadersInit = this.get_headers()
         try {
             const response = await fetch(
-                list_blocks_url,
+                user_id_lookup_url + '?screen_name=' + handle,
                 {
                     method: 'GET',
                     headers: headers,
@@ -156,22 +158,19 @@ export default class TwitterAccount {
      */
     public async block_handle(handle: string): Promise<boolean> {
         console.log(`Blocking Twitter handle ${handle}`)
-        let auth: TwitterAuth = this.auth
         try {
             if (this.auth.jwt === undefined || this.auth.csrf_token === undefined) {
                 console.log('No auth tokens found')
                 return false
             }
-            let headers: HeadersInit = this.get_headers()
-            headers['content-type'] = 'application/x-www-form-urlencoded'
             const response = await fetch(
                 block_url,
                 {
                     method: 'POST',
                     headers: {
-                        'authorization': auth.jwt!,
-                        'X-Csrf-Token': auth.csrf_token!,
-                        // Twitter POST body is plain text instead of form urlencoded
+                        'authorization': this.auth.jwt!,
+                        'X-Csrf-Token': this.auth.csrf_token!,
+                            // Twitter POST body is plain text instead of form urlencoded
                         'Content-Type': 'application/x-www-form-urlencoded',
                     },
                     credentials: 'include',
@@ -217,7 +216,6 @@ export default class TwitterAccount {
      */
     public async unblock_handle(handle: string): Promise<boolean> {
         console.log(`Unlocking Twitter handle ${handle}`)
-        let auth: TwitterAuth = this.auth
         try {
             if (this.auth.jwt === undefined || this.auth.csrf_token === undefined) {
                 console.log('No auth tokens found')
@@ -233,8 +231,8 @@ export default class TwitterAccount {
                 {
                     method: 'POST',
                     headers: {
-                        'authorization': auth.jwt!,
-                        'X-Csrf-Token': auth.csrf_token!,
+                        'authorization': this.auth.jwt!,
+                        'X-Csrf-Token': this.auth.csrf_token!,
                         // Twitter POST body is plain text instead of form urlencoded
                         'Content-Type': 'application/x-www-form-urlencoded',
                     },

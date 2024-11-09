@@ -12,6 +12,8 @@
 
     console.log('Config page reporting for duty')
 
+    let list_url: string = ''
+
     let byomod = new ByoMod(HANDLE_STORE)
     let table: TableHandler
 
@@ -50,8 +52,18 @@
             }
         }
     }
+
+
+    const add_list = async() => {
+        await byomod.add_list(list_url)
+        // Svelte trickery for updating lists:
+        // https://learn.svelte.dev/tutorial/updating-arrays-and-objects
+        byomod.subscribed_lists = byomod.subscribed_lists
+        list_url = ''
+    }
+
 </script>
-<h2>Available Lists</h2>
+<h2>Public Lists</h2>
 <div class='container mx-auto px-0 text-sm'>
 {#await get_lists()}
     <p>Loading unsubscribed lists...</p>
@@ -64,27 +76,23 @@
                     <th><img src='images/twitter-icon.png' alt='twitter icon' height='40' width='40'/></th>
                     <th><img src='images/youtube-icon.png' alt='youtube icon' height='40' width='40'/></th>
                     <th><img src='images/tiktok-icon.png' alt='tiktok icon' height='40' width='40'/></th>
-                    <th>Subscribe</th>
-                    <th>Unsubscribe</th>
+                    <th>Action</th>
                     <th>Categories</th>
                 </tr>
             </thead>
             <tbody>
-{#each table.rows as row}
+    {#each table.rows as row}
                     <tr>
                         <td style='width:50%'><a href='/listview.html?list={row.url}'>{row.name}</a></td>
                         <td style='width:10%'>{row.counters.get('twitter')}</td>
                         <td style='width:10%'>{row.counters.get('youtube')}</td>
                         <td style='width:10%'>{row.counters.get('tiktok')}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-{#if row.subscribed == false}
-                            <button type="button" on:click={() => subscribe(row.url)} class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-gray-50 text-grey-800 hover:text-grey-800 focus:outline-none focus:text-blue-800 disabled:opacity-50 disabled:pointer-events-none dark:text-blue-500 dark:hover:text-blue-400 dark:focus:text-blue-400">Subscribe</button>
-{/if}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-{#if row.subscribed == true}
-                            <button type="button" on:click={() => unsubscribe(row.url)} class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-gray-50 text-grey-800 hover:text-grey-800 focus:outline-none focus:text-blue-800 disabled:opacity-50 disabled:pointer-events-none dark:text-blue-500 dark:hover:text-blue-400 dark:focus:text-blue-400">Unsubscribe</button>
-{/if}
+        {#if row.subscribed == false}
+                            <button type="button" on:click={() => subscribe(row.url)} class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-gray-50 text-grey-800 hover:text-grey-800 focus:outline-none focus:text-blue-800 disabled:opacity-50 disabled:pointer-events-none dark:text-blue-500 dark:hover:text-blue-400 dark:focus:text-blue-400">Apply</button>
+        {:else}
+                            <button type="button" on:click={() => unsubscribe(row.url)} class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-gray-50 text-grey-800 hover:text-grey-800 focus:outline-none focus:text-blue-800 disabled:opacity-50 disabled:pointer-events-none dark:text-blue-500 dark:hover:text-blue-400 dark:focus:text-blue-400">Cancel</button>
+        {/if}
                         </td>
                         <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 20ch;">
                             {row.categories.toString()}
@@ -95,4 +103,20 @@
         </table>
     </Datatable>
 {/await}
+<br/>
+<form on:submit|preventDefault={add_list} method="POST">
+    <label>Add Private List
+        <input
+            name='list_url'
+            type='url'
+            class='border-2 border-gray-300 p-2'
+            placeholder='Enter a URL for a BYOMod list'
+            bind:value={list_url}
+        >
+        <button  type='submit' formaction='?/add_list' class='bg-blue-600 px-[6px] py-[14px] mt-6 text-white font-semibold'>
+            Add
+        </button>
+    </label>
+</form>
+
 </div>

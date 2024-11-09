@@ -1,7 +1,8 @@
 <script lang='ts'>
     import browser from 'webextension-polyfill';
 
-    import { popup } from '@skeletonlabs/skeleton';
+    import Button from "./Button.svelte"
+
     import type { PopupSettings } from '@skeletonlabs/skeleton';
 
     import ByoMod from './lib/byomod'
@@ -23,13 +24,6 @@
         placement: 'bottom-start',
     }
 
-    const add_list = async() => {
-        await byomod.add_list(list_url)
-        // Svelte trickery for updating lists:
-        // https://learn.svelte.dev/tutorial/updating-arrays-and-objects
-        byomod.subscribed_lists = byomod.subscribed_lists
-        list_url = ''
-    }
 
     browser.runtime.onMessage.addListener(
         (message, sender, sendResponse) => {
@@ -73,40 +67,34 @@
 
 {#await byomod.load_lists()}
     <p>Loading lists...</p>
-{:then lists}
-    <table>
-        <thead>
-            <tr>
+    {:then lists}
+        {#if lists && lists.size > 0}
+            <table>
+                <thead>
+                    <tr>
 
-                <th>Configured Lists</th>
-                <th>Blocks</th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            {#each lists.keys() as list_url}
-                <tr>
-                    <td>{lists.get(list_url).list.meta.list_name}</td>
-                    <td>{lists.get(list_url).list.block_list.length}</td>
-                </tr>
-            {/each}
-    </table>
-    <br/>
-    <form on:submit|preventDefault={add_list} method="POST">
-        <label>BYOMod list URL
-            <input
-                name='list_url'
-                type='url'
-                class='border-2 border-gray-300 p-2'
-                placeholder='Enter a URL for a BYOMod list'
-                bind:value={list_url}
-            >
-        </label>
-        <button  type='submit' formaction='?/add_list' class='bg-blue-600 px-[6px] py-[14px] mt-6 text-white font-semibold'>
-            Add
-        </button>
-    </form>
+                        <th>Configured Lists</th>
+                        <th>Blocks</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#each lists.keys() as list_url}
+                        <tr>
+                            <td>{lists.get(list_url).list.meta.list_name}</td>
+                            <td>{lists.get(list_url).list.block_list.length}</td>
+                        </tr>
+                    {/each}
+            </table>
+        {:else}
+            <br/>
+            <p>No lists configured</p>
+        {/if}
 {/await}
-<a href="/index.html" target='_blank'>Configure</a>
+<br/>
+<Button class="danger lg" on:click={()=>console.log("Clicked")}>
+	<a href="/index.html" target='_blank'>Configure lists</a>
+</Button>
+Hello, world!
 </main>
