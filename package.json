@@ -56,8 +56,6 @@
         "webextension-polyfill": "^0.12.0"
     },
     "dependencies": {
-        "@floating-ui/dom": "^1.6.12",
-        "@vincjo/datatables": "^2.0.5",
         "debug": "^4.3.7",
         "dexie": "^4.0.8",
         "js-yaml": "^4.1.0",

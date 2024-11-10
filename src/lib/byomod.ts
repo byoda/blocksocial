@@ -2,7 +2,7 @@
 
 import type {iListStat} from './datatypes'
 
-import BlockList from './list'
+import BlockList from './blocklist'
 import ByoStorage from './storage'
 import HandleStore from '../lib/handle_store/handle_store'
 
@@ -111,7 +111,10 @@ export default class ByoMod {
         }
         try {
             let new_list: BlockList = new BlockList(list_url)
-            await new_list.initialize()
+            if (! await new_list.initialize()) {
+                console.error(`Failed to initialize list: ${list_url}`)
+                return
+            }
             console.log(`List has ${new_list.block_entries.length} entries`)
             for (let [platform, net] of SOCIAL_NETWORKS_BY_PLATFORM) {
                 if (net === undefined || net.supported === false) {
@@ -155,7 +158,8 @@ export default class ByoMod {
                     console.log(`No block list for platform: ${platform}`)
                     continue
                 }
-                await new_list.queue_unblock_social_accounts(this.handle_store, platform)
+                // Unblocking is running in to CORS issues so we disable it
+                // await new_list.queue_unblock_social_accounts(this.handle_store, platform)
             }
         } catch (e) {
             console.error('Invalid URL: ', list_url, e)

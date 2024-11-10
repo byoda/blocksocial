@@ -6,7 +6,7 @@ const https = require('https');
 
 import { describe, test, expect } from '@jest/globals';
 
-import BlockList from './../../src/lib/list';
+import BlockList from './../../src/lib/blocklist';
 import {SOCIAL_NETWORKS_BY_DOMAIN} from '../../src/lib/constants';
 
 const TestList: string = 'https://byomod.org/lists/dathes.yaml';
@@ -18,15 +18,15 @@ describe(
         test(
             'should return a BlockList', () => {
                 const byo_list = new BlockList(
-                    SOCIAL_NETWORKS_BY_DOMAIN['x.com'], TestList
+                    SOCIAL_NETWORKS_BY_DOMAIN['x.com']
                 );
-                expect(byo_list).toBeInstanceOf(ByoList);
+                expect(byo_list).toBeInstanceOf(BlockList);
             }
         );
         test(
             'should load BlockList from file', () => {
                 const byo_list = new BlockList(TestList);
-                expect(byo_list).toBeInstanceOf(ByoList);
+                expect(byo_list).toBeInstanceOf(BlockList);
                 let entries: number = byo_list.from_file(TestFile);
                 expect(entries).toBe(992);
                 expect(byo_list.list!.block_list).toHaveLength(992);
@@ -40,7 +40,7 @@ describe(
         //         const byo_list = new BlockList(
         //             SOCIAL_NETWORKS_BY_DOMAIN'x.com'], TestList
         //         );
-        //         expect(byo_list).toBeInstanceOf(ByoList);
+        //         expect(byo_list).toBeInstanceOf(BlockList);
         //         await byo_list.download();
         //         expect(byo_list.list).toBeDefined();
         //         expect(byo_list.list!.block_list).toHaveLength(992);
@@ -51,7 +51,7 @@ describe(
                 const byo_list = new BlockList(
                     SOCIAL_NETWORKS_BY_DOMAIN.get('x.com'), TestList
                 );
-                expect(byo_list).toBeInstanceOf(ByoList);
+                expect(byo_list).toBeInstanceOf(BlockList);
                 let entries: number = byo_list.from_file(TestFile);
                 expect(entries).toBe(992);
                 expect(byo_list.list!.block_list).toHaveLength(992);
@@ -62,7 +62,7 @@ describe(
             'should load BlockList from file and store and retrieve',
             async () => {
                 const byo_list = new BlockList(TestList);
-                expect(byo_list).toBeInstanceOf(ByoList);
+                expect(byo_list).toBeInstanceOf(BlockList);
                 let entries: number = byo_list.from_file(TestFile);
                 expect(entries).toBe(992);
                 expect(byo_list.list!.block_list).toHaveLength(992);

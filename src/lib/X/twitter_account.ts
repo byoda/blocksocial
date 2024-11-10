@@ -65,19 +65,23 @@ export default class TwitterAccount {
         }
     }
 
-    public get_headers(): HeadersInit {
+    public get_headers(content_type: string | undefined = undefined): HeadersInit {
         let cookie_header: string = `ct0=${this.auth.csrf_token}, auth_token=${this.auth.cookie_auth}`
+        if (! content_type) {
+            content_type = 'application/x-www-form-urlencoded'
+        }
         let headers: HeadersInit = {
             'authorization': this.auth.jwt!,
             'X-Csrf-Token': this.auth.csrf_token!,
             'Cookie': cookie_header,
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': content_type,
         }
         return headers
     }
 
     public async get_user_id(handle: string): Promise<string | undefined> {
-        let headers: HeadersInit = this.get_headers()
+        let headers: HeadersInit = this.get_headers('text/plain')
+
         try {
             const response = await fetch(
                 user_id_lookup_url + '?screen_name=' + handle,
@@ -117,7 +121,7 @@ export default class TwitterAccount {
             return undefined
         }
 
-        let headers: HeadersInit = this.get_headers()
+        let headers: HeadersInit = this.get_headers('application/json')
         do {
             try {
                 const response = await fetch(
@@ -163,16 +167,12 @@ export default class TwitterAccount {
                 console.log('No auth tokens found')
                 return false
             }
+            let headers: HeadersInit = this.get_headers('application/x-www-form-urlencoded')
             const response = await fetch(
                 block_url,
                 {
                     method: 'POST',
-                    headers: {
-                        'authorization': this.auth.jwt!,
-                        'X-Csrf-Token': this.auth.csrf_token!,
-                            // Twitter POST body is plain text instead of form urlencoded
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
+                    headers: headers,
                     credentials: 'include',
                     body: 'screen_name=' + handle
                 }

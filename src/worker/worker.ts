@@ -141,15 +141,17 @@ async function _reconcile_social_account(
         let result: boolean
         if (target_status === SocialAccountStoredStatus.TO_BLOCK) {
             result = await block_social_account(account)
+            if (result && wait_time >= 2000) {
+                wait_time = Math.floor(wait_time / 2)
+            } else if (!result && wait_time < 300 * 1000) {
+                wait_time *= 2
+            }
         } else {
-            result = await unblock_social_account(account)
+            // Unblocking does not work due to CORS issues
+            // result = await unblock_social_account(account)
         }
 
-        if (result && wait_time >= 2000) {
-            wait_time = Math.floor(wait_time / 2)
-        } else if (!result && wait_time < 300 * 1000) {
-            wait_time *= 2
-        }
+
     } catch (exc) {
         console.log(
             `Exception blocking handle ${account.handle} on Twitter:`, exc

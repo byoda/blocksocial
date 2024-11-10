@@ -1,7 +1,7 @@
 <script lang='ts'>
     import {TableHandler, Datatable, ThSort, ThFilter } from '@vincjo/datatables';
 
-    import BlockList from './lib/list'
+    import BlockList from './lib/blocklist'
     import BlockEntry from './lib/blockentry'
 
     let url: string = ''
@@ -20,14 +20,14 @@
         block_list = new BlockList(url)
         await block_list.initialize()
         table = new TableHandler(block_list.block_entries, {rowsPerPage: 30})
-        return block_list.block_entries
+        return block_list
     }
 </script>
 <h1>List Metadata</h1>
 <div class='container mx-auto px-4 text-sm content-normal'>
 {#await get_list()}
     <p>Loading list {url}...</p>
-{:then block_list}
+{:then block_list: BlockList}
 
     <table >
         <thead>

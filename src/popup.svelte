@@ -1,10 +1,6 @@
 <script lang='ts'>
     import browser from 'webextension-polyfill';
 
-    import Button from "./Button.svelte"
-
-    import type { PopupSettings } from '@skeletonlabs/skeleton';
-
     import ByoMod from './lib/byomod'
     import HandleStore from './lib/handle_store/handle_store'
 
@@ -17,12 +13,6 @@
     let list_url: string = ''
 
     let byomod = new ByoMod(HANDLE_STORE)
-
-    const popupFeatured: PopupSettings = {
-        event: 'click',
-        target: 'real_popup',
-        placement: 'bottom-start',
-    }
 
 
     browser.runtime.onMessage.addListener(
@@ -93,8 +83,6 @@
         {/if}
 {/await}
 <br/>
-<Button class="danger lg" on:click={()=>console.log("Clicked")}>
-	<a href="/index.html" target='_blank'>Configure lists</a>
-</Button>
-Hello, world!
+
+    <button type="button" class="btn bg-gradient-to-br variant-gradient-secondary-tertiary"><a href="/index.html" target='_blank' class='btn bg-gradient-to-br variant-gradient-secondary-tertiary'>Go to the configuration page</a></button>
 </main>

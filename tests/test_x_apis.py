@@ -45,7 +45,7 @@ def main() -> None:
         'authorization': AUTH_TOKEN,
         'cookie': '; '.join(f'{k}={v}' for k, v in cookies.items()),
         'x-csrf-token': cookies.get('ct0', ''),
-        'content-type'
+        'content-type': 'text/plain'
     }
 
     # endpoint: str = 'https://api.x.com/1.1/account/settings.json'
@@ -58,16 +58,17 @@ def main() -> None:
     # else:
     #     print('Failure!', resp.text)
 
-    # endpoint: str = 'https://api.x.com/1.1/users/lookup.json?screen_name=joni_askola'
-    # resp: httpx.Response = httpx.get(
-    #     endpoint,  headers=headers
-    # )
-    # if resp.status_code == 200:
-    #     print(resp.text)
-    #     data = resp.json()
-    #     print(json.dumps(data, indent=2))
-    # else:
-    #     print('Failure!', resp.text)
+    headers['origin'] = 'chrome-extension://eonknbiiibbeipnbhlgedahcbaeomnmj'
+    endpoint: str = 'https://api.x.com/1.1/users/lookup.json?screen_name=joni_askola'
+    resp: httpx.Response = httpx.get(
+        endpoint,  headers=headers
+    )
+    if resp.status_code == 200:
+        print(resp.text)
+        data = resp.json()
+        print(json.dumps(data, indent=2))
+    else:
+        print('Failure!', resp.text)
 
     endpoint: str = 'https://api.x.com/1.1/blocks/list.json'
     cursor: int = -1
