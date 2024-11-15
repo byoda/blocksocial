@@ -35,3 +35,5 @@ pipenv run python tools/modlist.py --workbook tests/collateral/blocklist.csv --y
 
 If you have access to a webserver then you can upload the yaml file there. Alternatively, you can email
 the YAML file to steven+byomod@byoda.org and I will host it for you under https://byomod.org/lists/your_blocklist.yaml.
+
+In any case, ping me about your list so I can include it in the list-of-lists at https://byomod.org/lists/list-of-lists.json
