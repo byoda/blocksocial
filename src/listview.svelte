@@ -22,9 +22,24 @@
         table = new TableHandler(block_list.block_entries, {rowsPerPage: 30})
         return block_list
     }
+
+    const block = async(handle: string) => {
+        console.log(`Subscribing to ${url}`)
+        // await byomod.block('twitter', handle)
+        // Svelte trickery for updating lists:
+        // https://learn.svelte.dev/tutorial/updating-arrays-and-objects
+        // byomod.subscribed_lists = byomod.subscribed_lists
+
+        for (let list of byomod.list_of_lists.values()) {
+                if (list.url == url) {
+                    list.subscribed = true
+                    break
+                }
+            }
+    }
 </script>
 <h1>List Metadata</h1>
-<div class='container mx-auto px-4 text-sm content-normal'>
+<div class='container mx-auto px-4 text-sm content-normal text-left'>
 {#await get_list()}
     <p>Loading list {url}...</p>
 {:then block_list: BlockList}
@@ -59,20 +74,16 @@
                 <th>List URL</th>
                 <td>{block_list.list.meta.download_url}</td>
             </tr>
-            <tr>
-                <th>Categories</th>
-                <td>
-
-                </td>
-            </tr>
         </thead>
     </table>
-<h1>Categories used in the list</h1>
+    <br/>
+    <h1>Categories used in the list</h1>
+    <br/>
     <table>
         <thead>
     {#each block_list.categories as category}
             <tr>
-                <th >{category[0]}</th>
+                <th>{category[0]}</th>
                 <td>{category[1]}</td>
             </tr>
     {/each}
@@ -91,6 +102,7 @@
                     <ThSort {table} field="twitter">Twitter</ThSort>
                     <ThSort {table} field="youtube">YouTube</ThSort>
                     <ThSort {table} field="tiktok">TikTok</ThSort>
+                    <th>Block</th>
                 </tr>
                 <tr>
                     <ThFilter {table} field='first_name' />
@@ -102,6 +114,7 @@
                     <ThFilter {table} field='twitter' />
                     <ThFilter {table} field='youtube' />
                     <ThFilter {table} field='tiktok' />
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -134,11 +147,14 @@
                         -
 {/if}
                     </td>
+                    <td>
+                        <button type="button" on:click={() => apply(block_entry.twitter_handle)} class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-gray-50 text-grey-800 hover:text-grey-800 focus:outline-none focus:text-blue-800 disabled:opacity-50 disabled:pointer-events-none dark:text-blue-500 dark:hover:text-blue-400 dark:focus:text-blue-400">Block</button>
+
+                    </td>
                 </tr>
 {/each}
             </tbody>
         </table>
     </Datatable>
-    {/await}
+{/await}
 </div>
-
