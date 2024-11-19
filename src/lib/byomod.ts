@@ -1,6 +1,6 @@
 // Class containing all the data for BYOMod and methods to load/save them
 
-import type {iListStat} from './datatypes'
+import type {IListStat} from './datatypes'
 
 import BlockList from './blocklist'
 import ByoStorage from './storage'
@@ -17,7 +17,7 @@ export default class ByoMod {
     handle_store: HandleStore
     subscribed_lists: Set<string>
     // lists: Map<string, BlockList> = new Map<string, BlockList>
-    list_of_lists: Map<string, iListStat> = new Map<string, iListStat>()
+    list_of_lists: Map<string, IListStat> = new Map<string, IListStat>()
 
     constructor(handle_store: HandleStore) {
         this.storage = new ByoStorage()
@@ -26,15 +26,15 @@ export default class ByoMod {
         this.subscribed_lists = new Set(subscribed_lists_data)
     }
 
-    async download_list_of_lists(url: string): Promise<Map<string,iListStat>> {
+    async download_list_of_lists(url: string): Promise<Map<string,IListStat>> {
         const resp: Response = await fetch(url)
         console.log(`Downloaded list of lists from ${url}`)
         if (!resp.ok) {
             console.error('Failed to download list of lists')
-            return new Map<string,iListStat>()
+            return new Map<string,IListStat>()
         }
         try {
-            let lists: iListStat[] = await resp.json() as iListStat[]
+            let lists: IListStat[] = await resp.json() as IListStat[]
             for (let list of lists) {
                 this.list_of_lists.set(list.url, list)
                 if (this.subscribed_lists.has(list.url)) {
@@ -50,15 +50,15 @@ export default class ByoMod {
             return this.list_of_lists
         } catch (e) {
             console.error(`Failed to parse list of lists JSON: ${e}`)
-            return new Map<string,iListStat>()
+            return new Map<string,IListStat>()
         }
     }
 
-    async get_subscribed_lists(): Promise<Map<string, iListStat>> {
+    async get_subscribed_lists(): Promise<Map<string, IListStat>> {
         if (this.list_of_lists.size == 0) {
             await this.download_list_of_lists(LIST_OF_LISTS_URL)
         }
-        let subscribed_lists: Map<string, iListStat> = new Map<string, iListStat>()
+        let subscribed_lists: Map<string, IListStat> = new Map<string, IListStat>()
         for (let list of this.list_of_lists.values()) {
             if (this.subscribed_lists.has(list.url)) {
                 list.subscribed = true
@@ -68,11 +68,11 @@ export default class ByoMod {
         return subscribed_lists
     }
 
-    async get_unsubscribed_lists(): Promise<Map<string, iListStat>> {
+    async get_unsubscribed_lists(): Promise<Map<string, IListStat>> {
         if (this.list_of_lists.size == 0) {
             await this.download_list_of_lists(LIST_OF_LISTS_URL)
         }
-        let unsubscribed_lists: Map<string, iListStat> = new Map<string, iListStat>()
+        let unsubscribed_lists: Map<string, IListStat> = new Map<string, IListStat>()
         for (let list of this.list_of_lists.values()) {
             if (! this.subscribed_lists?.has(list.url)) {
                 list.subscribed = false

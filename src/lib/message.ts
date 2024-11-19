@@ -2,12 +2,12 @@
 /* This module is currently not used
 */
 
-import browser from 'webextension-polyfill';
+// import browser from 'webextension-polyfill';
 
 
-import type {ISocialNetworkAuth} from './datatypes'
+// import type {ISocialNetworkAuth} from './datatypes'
 
-import HandleStore from '../lib/handle_store/handle_store'
+// import HandleStore from '../lib/handle_store/handle_store'
 
 export default class Message {
     public static async send(
@@ -31,7 +31,7 @@ export default class Message {
             return false
         } else {
             try {
-                await chrome.tabs.sendMessage(tab!['id']!, serialized_message)
+                await chrome.tabs.sendMessage(tab['id']!, serialized_message)
                 return true
             } catch (e) {
                 console.log(`Failed to send message to tab: ${e} -> ${serialized_message}`)
@@ -43,10 +43,10 @@ export default class Message {
 //     public static setup_listen(handle_store: HandleStore): Function | undefined {
 
 //                 try {
-//                     let message: iMessage<any> = JSON.parse(request) as iMessage<any>
+//                     let message: IMessage<any> = JSON.parse(request) as IMessage<any>
 //                     if (message.type === 'auth_tokens') {
 //                         console.log('Received auth_tokens message')
-//                         save_auth_tokens(message as iMessage<ISocialNetworkAuth>)
+//                         save_auth_tokens(message as IMessage<ISocialNetworkAuth>)
 //                     } else if (message.type === 'social_accounts_push') {
 //                     }
 //                 } catch (e) {
@@ -63,7 +63,7 @@ export default class Message {
 // }
 
 
-// function save_auth_tokens(message: iMessage<ISocialNetworkAuth>) {
+// function save_auth_tokens(message: IMessage<ISocialNetworkAuth>) {
 //     console.log(`Received auth_tokens: ${message.source}:${message.type}`)
 //     let payload: ISocialNetworkAuth
 //     if (typeof message.data === 'string') {

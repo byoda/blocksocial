@@ -63,12 +63,12 @@ export interface ISocialNetworkAuth {
 
 
 // Used for saving the List-of-Lists as string to local storage
-export interface iListOfLists {
+export interface IListOfLists {
     lists: Set<string>
 }
 
 // The stats included in the central hosted list of lists
-export interface iListStat {
+export interface IListStat {
     name: string
     last_updated: Date
     url: string
@@ -79,7 +79,7 @@ export interface iListStat {
 
 export interface IBlockList {
     meta: IBlockListMeta
-    block_list: iBlockEntry[]
+    block_list: IBlockEntry[]
     trust_list: string[]
 }
 
@@ -98,14 +98,14 @@ export interface IBlockListCategory {
     description: string
 }
 
-export interface iSocialAccount {
+export interface ISocialAccountListStat {
     platform: string
     handle: string
     url: string
     is_primary: boolean
 }
 
-export interface iBlockEntry {
+export interface IBlockEntry {
     first_name: string
     last_name: string
     business_name: string
@@ -115,24 +115,24 @@ export interface iBlockEntry {
     categories: string[]
     annotations: string[]
     urls: string[]
-    social_accounts: iSocialAccount[]
+    social_accounts: ISocialAccountListStat[]
 }
 
 
-export interface iMessage<Type> {
+export interface IMessage<Type> {
     source: string
     type: string
     data: Type
 }
 
 // Currently unused, was used for messages
-export interface iSocialAccountPush {
+export interface ISocialAccountListStatPush {
     list: string,
-    accounts: iSocialAccount[]
+    accounts: ISocialAccountListStat[]
 }
 
 // Currently unused, planned use for tracking social account stats
-export interface iAccountStat {
+export interface IAccountStat {
     timestamp: Date;
     followers: number;
     assets: number;

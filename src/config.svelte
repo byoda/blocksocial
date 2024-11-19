@@ -4,7 +4,7 @@
 
     import ByoMod from './lib/byomod'
     import HandleStore from './lib/handle_store/handle_store'
-    import type {iListStat} from './lib/datatypes'
+    import type {IListStat} from './lib/datatypes'
 
     import {LIST_OF_LISTS_URL} from './lib/constants'
 
@@ -18,7 +18,7 @@
     let table: TableHandler
 
     const get_lists = async() => {
-        const lists: Map<string, iListStat> = await byomod.download_list_of_lists(LIST_OF_LISTS_URL)
+        const lists: Map<string, IListStat> = await byomod.download_list_of_lists(LIST_OF_LISTS_URL)
         table = new TableHandler(lists.values().toArray(), {rowsPerPage: 10})
         return lists.values().toArray()
     }

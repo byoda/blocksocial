@@ -2,7 +2,7 @@
 
 import * as yaml from 'js-yaml';
 
-import {PlatformAccountStatus, SocialAccountStoredStatus, type IBlockList, type iBlockEntry, type iSocialAccount} from './datatypes';
+import {PlatformAccountStatus, SocialAccountStoredStatus, type IBlockList, type IBlockEntry, type ISocialAccountListStat} from './datatypes';
 
 import HandleStore from './handle_store/handle_store'
 
@@ -15,7 +15,7 @@ export default class BlockList {
     */
     storage: ByoStorage;
     download_url: URL
-    list: IBlockList | undefined
+    list_data: IBlockList | undefined
     author_name: string | undefined
     author_email: string | undefined
     author_url: string | undefined
@@ -64,7 +64,7 @@ export default class BlockList {
                 return false
             }
         }
-        this.list = list_data
+        this.list_data = list_data
         this.convert_categories(list_data.meta.categories)
         this.convert_block_entries(list_data.block_list)
 
@@ -91,10 +91,10 @@ export default class BlockList {
 
     async save(list: IBlockList | undefined = undefined): Promise<void> {
         if (list === undefined) {
-            if (this.list === undefined) {
+            if (this.list_data === undefined) {
                 throw new Error('No list to save')
             }
-            list = this.list;
+            list = this.list_data;
         }
         let key: string = this.get_keyname(this.download_url.href);
         console.log(`Saving list under key: ${key}`);
@@ -102,8 +102,8 @@ export default class BlockList {
         this.storage.set(key, list);
     }
 
-    get_accounts_by_platform(platform: string): iSocialAccount[] {
-        let accounts: iSocialAccount[] = [];
+    get_accounts_by_platform(platform: string): ISocialAccountListStat[] {
+        let accounts: ISocialAccountListStat[] = [];
 
         let block_entry: BlockEntry
         for (block_entry of this.block_entries || []) {
@@ -122,7 +122,7 @@ export default class BlockList {
 
     async queue_block_social_accounts(handle_store: HandleStore, platform: string) {
         console.log(`Queueing accounts to block for platform: ${platform}`)
-        let accounts: iSocialAccount[] = this.get_accounts_by_platform(platform)
+        let accounts: ISocialAccountListStat[] = this.get_accounts_by_platform(platform)
         for (let account of accounts) {
             handle_store.add(account.handle, platform, SocialAccountStoredStatus.TO_BLOCK)
         }
@@ -130,7 +130,7 @@ export default class BlockList {
 
     async queue_unblock_social_accounts(handle_store: HandleStore, platform: string) {
         console.log(`Queueing accounts to unblock for platform: ${platform}`)
-        let accounts: iSocialAccount[] = this.get_accounts_by_platform(platform)
+        let accounts: ISocialAccountListStat[] = this.get_accounts_by_platform(platform)
         for (let account of accounts) {
             handle_store.update_status(
                 account.handle, platform,
@@ -159,7 +159,7 @@ export default class BlockList {
         throw new Error('Failed to download list');
     }
 
-    private convert_block_entries(block_list: iBlockEntry[]) {
+    private convert_block_entries(block_list: IBlockEntry[]) {
         for (let entry of block_list) {
             let block_entry: BlockEntry = new BlockEntry(entry);
             this.block_entries.push(block_entry);
@@ -185,11 +185,4 @@ export default class BlockList {
          */
         return `list_${key}`;
     }
-    // Used for test purposes
-    // from_file(filename: string): number {
-    //     let text: string = fs.readFileSync(filename, 'utf8');
-    //     let data: IBlockList = yaml.load(text) as IBlockList ;
-    //     this.list = data;
-    //     return this.list.block_list.length;
-    // }
 }
