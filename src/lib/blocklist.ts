@@ -65,6 +65,12 @@ export default class BlockList {
             }
         }
         this.list_data = list_data
+        this.author_name = list_data.meta.author_name
+        this.author_email = list_data.meta.author_email
+        this.author_url = list_data.meta.author_url
+        this.list_name = list_data.meta.list_name
+        this.last_updated = list_data.meta.last_updated
+
         this.convert_categories(list_data.meta.categories)
         this.convert_block_entries(list_data.block_list)
 
@@ -151,7 +157,7 @@ export default class BlockList {
             console.log(
                 'Downloaded list:', this.download_url.href, 'with',
                 list_data.block_list.length, 'entries'
-            );
+            )
             return list_data
         }
 

@@ -48,11 +48,11 @@
         <thead>
             <tr>
                 <th>List</th>
-                <td>{block_list.list.meta.list_name}</td>
+                <td>{block_list.list_name}</td>
             </tr>
             <tr>
                 <th>Last updated</th>
-                <td>{block_list.list.meta.last_updated}</td>
+                <td>{block_list.last_updated}</td>
             </tr>
             <tr>
                 <th>Entries</th>
@@ -60,19 +60,19 @@
             </tr>
             <tr>
                 <th>Author</th>
-                <td>{block_list.list.meta.author_name}</td>
+                <td>{block_list.author_name}</td>
             </tr>
             <tr>
                 <th>Email</th>
-                <td>{block_list.list.meta.author_email}</td>
+                <td>{block_list.author_email}</td>
             </tr>
             <tr>
                 <th>Author URL</th>
-                <td>{block_list.list.meta.author_url}</td>
+                <td>{block_list.author_url}</td>
             </tr>
             <tr>
                 <th>List URL</th>
-                <td>{block_list.list.meta.download_url}</td>
+                <td>{block_list.download_url}</td>
             </tr>
         </thead>
     </table>

@@ -1,38 +1,38 @@
 ---
-- meta:
-    author_email: steven+byomod@byoda.org
-    author_name: Dathes
-    author_url: https://byoda.org
-    categories:
-      alt-right: maga, christian-nationalist, rage-baiting, and/or bad-faith arguments,
-        etc.
-      bot: likely an automated account, trying to appear to not be an automated account
-      categories: ''
-      conspiracy: spreads unprovable conspiracy theories
-      disinformation: intentionally spreading false information
-      disinformation-ukraine: spreading disinformation specifically about the war
-        in ukraine
-      disinformation-war: spreading disinformation about wars
-      facist: promotes authoritarian centralized power, oppresive dictatorial control
-      finance-bro: people giving questionable financial advice, including crypto
-      gambling: promotes gambling
-      gun-rights: people that refuse to consider that killing someone is a lot easier
-        when you have a gun
-      impersonator: tries to appear as someone they are not
-      medical-disinformation: including the impact of covid, denying vaccins work,
-        and/or promote alternative treatments over science-based treatments
-      misogyny: Hatred of, contempt for, or prejudice against women
-      nazi: sympathizes nazi ideology
-      racism: prejudiced belief that one race is superior to others
-      troll: posts deliberately offensive or provocative messages
-      ufo: believes that there is a conspiracy to deny existence of UFOs
-    disclaimer: This list reflects the opinions of the author and the author shares
-      these opinions with those who are interested in them. No information in this
-      list should be considered as fact.
-    download_url: https://byomod.org/lists/dathes.yaml
-    last_updated: 2024-11-04 17:00:45.585625+00:00
-    list_name: Steven's block list
-- block_list:
+meta:
+  author_email: steven+byomod@byoda.org
+  author_name: Dathes
+  author_url: https://byoda.org
+  categories:
+    alt-right: maga, christian-nationalist, rage-baiting, and/or bad-faith arguments,
+      etc.
+    bot: likely an automated account, trying to appear to not be an automated account
+    categories: ''
+    conspiracy: spreads unprovable conspiracy theories
+    disinformation: intentionally spreading false information
+    disinformation-ukraine: spreading disinformation specifically about the war
+      in ukraine
+    disinformation-war: spreading disinformation about wars
+    facist: promotes authoritarian centralized power, oppresive dictatorial control
+    finance-bro: people giving questionable financial advice, including crypto
+    gambling: promotes gambling
+    gun-rights: people that refuse to consider that killing someone is a lot easier
+      when you have a gun
+    impersonator: tries to appear as someone they are not
+    medical-disinformation: including the impact of covid, denying vaccins work,
+      and/or promote alternative treatments over science-based treatments
+    misogyny: Hatred of, contempt for, or prejudice against women
+    nazi: sympathizes nazi ideology
+    racism: prejudiced belief that one race is superior to others
+    troll: posts deliberately offensive or provocative messages
+    ufo: believes that there is a conspiracy to deny existence of UFOs
+  disclaimer: This list reflects the opinions of the author and the author shares
+    these opinions with those who are interested in them. No information in this
+    list should be considered as fact.
+  download_url: https://byomod.org/lists/dathes.yaml
+  last_updated: 2024-11-04 17:00:45.585625+00:00
+  list_name: Steven's block list
+block_list:
   - annotations: []
     business_name: null
     business_type: null
@@ -30020,5 +30020,5 @@
       status: active
       url: https://x.com/naval
     urls: []
-- trust_list: []
+trust_list: []
 ...
